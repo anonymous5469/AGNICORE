@@ -1,0 +1,41 @@
+# Security
+.env
+*.db
+*.db-journal
+
+# Dependencies
+node_modules/
+target/
+Cargo.lock
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+.vercel
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+.cache/

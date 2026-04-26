@@ -63,7 +63,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     
     // 🔹 CORS - Restrict to frontend origin
     let allowed_origins = env::var("ALLOWED_ORIGINS")
-        .unwrap_or_else(|_| "http://localhost:5173,http://127.0.0.1:5173".to_string());
+        .unwrap_or_else(|_| "http://localhost:5173,http://127.0.0.1:5173,http://192.168.1.40:5173".to_string());
     
     let origins: Vec<&str> = allowed_origins.split(',').collect();
     let cors = tower_http::cors::CorsLayer::new()
@@ -96,7 +96,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // 🔹 Bind server
     let port = env::var("PORT").unwrap_or_else(|_| "8080".to_string()).parse::<u16>().unwrap_or(8080);
-    let addr = SocketAddr::from(([127, 0, 0, 1], port));
+    let addr = SocketAddr::from(([0, 0, 0, 0], port));
     tracing::info!("listening on {}", addr);
 
     let listener = TcpListener::bind(addr).await?;
