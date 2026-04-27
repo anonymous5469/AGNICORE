@@ -6,11 +6,11 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y pkg-config libssl-dev && rm -rf /var/lib/apt/lists/*
 
 # Copy Cargo files first for better caching
-COPY Cargo.toml Cargo.lock ./
+COPY server/agnicore/Cargo.toml server/agnicore/Cargo.lock ./
 
 # Copy source code
-COPY src ./src
-COPY .env ./
+COPY server/agnicore/src ./src
+COPY server/agnicore/.env ./
 
 # Build release binary
 RUN cargo build --release
