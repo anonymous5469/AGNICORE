@@ -1,10 +1,15 @@
-use sqlx::{sqlite::SqlitePoolOptions, SqlitePool};
+use sqlx::{Pool, Postgres};
 use std::env;
 
-pub async fn connect_db() -> Result<SqlitePool, sqlx::Error> {
+pub type DbPool = Pool<Postgres>;
+
+pub async fn connect_db() -> Result<DbPool, sqlx::Error> {
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    SqlitePoolOptions::new()
-        .max_connections(5)
-        .connect(&database_url)
-        .await
+    
+    // Check if URL is for PostgreSQL or SQLite
+    if database_url.starts_with("postgres") {
+        Pool::connect(&database_url).await
+    } else {
+        panic!("PostgreSQL URL required. Found: {}", database_url);
+    }
 }

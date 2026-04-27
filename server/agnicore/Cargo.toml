@@ -24,9 +24,9 @@ async-trait = "0.1"
 anyhow = "1.0"
 config = "0.14"
 dotenvy = "0.15"
-chrono = "0.4.44"
+chrono = { version = "0.4.44", features = ["serde"] }
 jsonwebtoken = { version = "10.3.0", features = ["rust_crypto"] }
-sqlx = { version = "0.8.6", default-features = false, features = ["runtime-tokio", "sqlite", "macros", "derive"] }
+sqlx = { version = "0.8.6", default-features = false, features = ["runtime-tokio", "sqlite", "postgres", "macros", "derive", "chrono"] }
 tower-http = { version = "0.6", features = ["cors", "trace", "limit", "set-header"] }
 tower = { version = "0.5", features = ["util", "buffer"] }
 governor = "0.7"

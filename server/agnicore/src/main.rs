@@ -13,7 +13,7 @@ use agnicore::services::user_service::UserService;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenvy::dotenv().ok();
 
-    // 🔹 Initialize logging
+    // Initialize logging
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env()
@@ -22,29 +22,42 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    // 🔹 Initialize Audit Database
+    // Initialize PostgreSQL Database
     let pool = db::connection::connect_db().await?;
+    
+    // Create tables if they don't exist
     sqlx::query(
         "CREATE TABLE IF NOT EXISTS logs (
-            id TEXT PRIMARY KEY,
-            user TEXT NOT NULL,
-            resource TEXT NOT NULL,
+            id VARCHAR(36) PRIMARY KEY,
+            user VARCHAR(255) NOT NULL,
+            resource VARCHAR(255) NOT NULL,
             risk_score INTEGER NOT NULL,
-            decision TEXT NOT NULL,
-            created_at TEXT NOT NULL
+            decision VARCHAR(10) NOT NULL,
+            created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
         )"
     )
     .execute(&pool)
     .await?;
 
-    // 🔹 Initialize Users Database
-    let users_pool = db::users_connection::connect_users_db().await?;
+    sqlx::query(
+        "CREATE TABLE IF NOT EXISTS users (
+            id VARCHAR(36) PRIMARY KEY,
+            username VARCHAR(255) UNIQUE NOT NULL,
+            password_hash VARCHAR(255) NOT NULL,
+            role VARCHAR(20) NOT NULL DEFAULT 'user',
+            status VARCHAR(20) NOT NULL DEFAULT 'pending',
+            created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+            updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+        )"
+    )
+    .execute(&pool)
+    .await?;
     
-    // 🔹 Create repositories
-    let log_repo = Arc::new(repository::log_repository::SqliteLogRepository::new(pool.clone()));
-    let user_repo = Arc::new(repository::user_repository::SqliteUserRepository::new(users_pool.clone()));
+    // Create repositories (using single PostgreSQL pool)
+    let log_repo = Arc::new(repository::log_repository::PgLogRepository::new(pool.clone()));
+    let user_repo = Arc::new(repository::user_repository::PgUserRepository::new(pool.clone()));
     
-    // 🔹 Auto-create first admin if no users exist
+    // Auto-create first admin if no users exist
     let user_count = user_repo.count_users().await?;
     if user_count == 0 {
         tracing::info!("No users found. Creating first admin user...");
@@ -58,32 +71,40 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
     
-    // 🔹 Build app state
+    // Build app state
     let app_state = AppState::new(log_repo, user_repo);
     
-    // 🔹 CORS - Restrict to frontend origin
+    // CORS - Allow all origins for now (update for production)
     let allowed_origins = env::var("ALLOWED_ORIGINS")
-        .unwrap_or_else(|_| "http://localhost:5173,http://127.0.0.1:5173,http://192.168.1.40:5173".to_string());
+        .unwrap_or_else(|_| "*".to_string());
     
     let origins: Vec<&str> = allowed_origins.split(',').collect();
     let cors = tower_http::cors::CorsLayer::new()
         .allow_origin(origins.iter().map(|origin| {
-            origin.parse::<axum::http::HeaderValue>().expect("Invalid CORS origin")
+            if *origin == "*" {
+                axum::http::HeaderValue::from_static("*")
+            } else {
+                origin.parse::<axum::http::HeaderValue>().expect("Invalid CORS origin")
+            }
         }).collect::<Vec<_>>())
-        .allow_methods([axum::http::Method::GET, axum::http::Method::POST])
+        .allow_methods([
+            axum::http::Method::GET, 
+            axum::http::Method::POST,
+            axum::http::Method::OPTIONS,
+        ])
         .allow_headers([
             axum::http::HeaderName::from_static("content-type"),
             axum::http::HeaderName::from_static("authorization"),
         ])
         .max_age(std::time::Duration::from_secs(3600));
 
-    // 🔹 Security headers middleware
+    // Security headers middleware
     let security_headers = tower_http::set_header::SetResponseHeaderLayer::if_not_present(
         axum::http::header::X_CONTENT_TYPE_OPTIONS,
         axum::http::HeaderValue::from_static("nosniff"),
     );
 
-    // 🔹 Request body size limit (1MB max)
+    // Request body size limit (1MB max)
     let body_limit = RequestBodyLimitLayer::new(1024 * 1024);
 
     let app = Router::new()
@@ -94,8 +115,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .layer(security_headers)
         .layer(cors);
 
-    // 🔹 Bind server
-    let port = env::var("PORT").unwrap_or_else(|_| "8080".to_string()).parse::<u16>().unwrap_or(8080);
+    // Bind server
+    let port = env::var("PORT")
+        .unwrap_or_else(|_| "8080".to_string())
+        .parse::<u16>()
+        .unwrap_or(8080);
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
     tracing::info!("listening on {}", addr);
 

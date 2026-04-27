@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use sqlx::types::chrono::{DateTime, Utc};
 use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -26,5 +27,5 @@ pub struct LogEntry {
     pub resource: String,
     pub risk_score: i32,
     pub decision: String,
-    pub created_at: String,
+    pub created_at: DateTime<Utc>,
 }
