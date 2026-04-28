@@ -32,7 +32,7 @@ impl LogRepository for PgLogRepository {
     async fn log_access(&self, user: &str, resource: &str, risk: i32, decision: &str
     ) -> Result<(), crate::errors::AppError> {
         sqlx::query(
-            "INSERT INTO logs (id, user, resource, risk_score, decision, created_at)
+            "INSERT INTO logs (id, \"user\", resource, risk_score, decision, created_at)
              VALUES ($1, $2, $3, $4, $5, $6)"
         )
         .bind(Uuid::new_v4().to_string())
@@ -53,7 +53,7 @@ impl LogRepository for PgLogRepository {
     async fn get_recent_logs(&self, limit: i64
     ) -> Result<Vec<LogEntry>, crate::errors::AppError> {
         let logs = sqlx::query_as::<_, LogEntry>(
-            "SELECT id, user, resource, risk_score, decision, created_at 
+            "SELECT id, \"user\", resource, risk_score, decision, created_at 
              FROM logs ORDER BY created_at DESC LIMIT $1"
         )
         .bind(limit)
@@ -73,7 +73,7 @@ impl LogRepository for PgLogRepository {
     ) -> Result<i64, crate::errors::AppError> {
         let count: i64 = sqlx::query_scalar(
             "SELECT COUNT(*) FROM logs 
-             WHERE user = $1 AND created_at > NOW() - INTERVAL '1 minute' * $2"
+             WHERE \"user\" = $1 AND created_at > NOW() - INTERVAL '1 minute' * $2"
         )
         .bind(user)
         .bind(minutes)

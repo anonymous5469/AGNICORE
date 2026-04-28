@@ -29,7 +29,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     sqlx::query(
         "CREATE TABLE IF NOT EXISTS logs (
             id VARCHAR(36) PRIMARY KEY,
-            user VARCHAR(255) NOT NULL,
+            \"user\" VARCHAR(255) NOT NULL,
             resource VARCHAR(255) NOT NULL,
             risk_score INTEGER NOT NULL,
             decision VARCHAR(10) NOT NULL,

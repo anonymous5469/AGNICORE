@@ -23,6 +23,7 @@ pub struct AccessDecision {
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
 pub struct LogEntry {
     pub id: String,
+    #[sqlx(rename = "user")]
     pub user: String,
     pub resource: String,
     pub risk_score: i32,
