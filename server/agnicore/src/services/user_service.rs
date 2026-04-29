@@ -97,6 +97,41 @@ impl UserService {
         
         Ok(user)
     }
+
+    pub async fn change_password(
+        &self,
+        user_id: &str,
+        current_password: &str,
+        new_password: &str,
+        confirm_password: &str,
+    ) -> Result<(), crate::errors::AppError> {
+        if new_password != confirm_password {
+            return Err(crate::errors::AppError::BadRequest(
+                "New password and confirmation do not match".to_string(),
+            ));
+        }
+
+        PasswordService::validate_password_strength(new_password)?;
+
+        let user = self
+            .user_repo
+            .find_by_id(user_id)
+            .await?
+            .ok_or(crate::errors::AppError::Unauthorized)?;
+
+        let current_password_is_valid = self
+            .password_service
+            .verify_password(current_password, &user.password_hash)?;
+
+        if !current_password_is_valid {
+            return Err(crate::errors::AppError::Unauthorized);
+        }
+
+        let password_hash = self.password_service.hash_password(new_password)?;
+        self.user_repo
+            .update_password_by_id(user_id, &password_hash)
+            .await
+    }
     
     pub async fn approve_user(
         &self,

@@ -78,7 +78,7 @@ function App() {
       case 'logs':
         return <Logs />;
       case 'users':
-        return isAdmin ? <UserManagement /> : <Dashboard />;
+        return isAdmin ? <UserManagement onPasswordChanged={handleLogout} /> : <Dashboard />;
       default:
         return <Dashboard />;
     }

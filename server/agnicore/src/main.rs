@@ -6,6 +6,7 @@ use axum::{routing::get, Router};
 use tower_http::limit::RequestBodyLimitLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use agnicore::{db, routes, repository, state::AppState};
+use agnicore::repository::user_repository::UserRepository;
 use agnicore::services::user_service::UserService;
 
 #[tokio::main]
@@ -56,13 +57,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let log_repo = Arc::new(repository::log_repository::PgLogRepository::new(pool.clone()));
     let user_repo = Arc::new(repository::user_repository::PgUserRepository::new(pool.clone()));
     
-    // Keep the deployment admin account in sync with environment variables.
-    let admin_username = env::var("ADMIN_USERNAME").unwrap_or_else(|_| "admin".to_string());
-    let admin_password = env::var("ADMIN_PASSWORD").unwrap_or_else(|_| "admin123!".to_string());
-    let user_service = UserService::new(user_repo.clone());
-    match user_service.ensure_admin(&admin_username, &admin_password).await {
-        Ok(user) => tracing::info!("Admin user synchronized: {}", user.username),
-        Err(e) => tracing::error!("Failed to synchronize admin user: {:?}", e),
+    // Create the first admin only once. Password changes are self-service after that.
+    let user_count = user_repo.count_users().await?;
+    if user_count == 0 {
+        tracing::info!("No users found. Creating first admin user...");
+        let admin_username = env::var("ADMIN_USERNAME").unwrap_or_else(|_| "admin".to_string());
+        let admin_password = env::var("ADMIN_PASSWORD").unwrap_or_else(|_| "admin123!".to_string());
+
+        let user_service = UserService::new(user_repo.clone());
+        match user_service.create_admin(&admin_username, &admin_password).await {
+            Ok(user) => tracing::info!("Admin user created: {}", user.username),
+            Err(e) => tracing::error!("Failed to create admin user: {:?}", e),
+        }
     }
     
     // Build app state

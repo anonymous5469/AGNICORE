@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Check, X, Users, ShieldCheck, AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Check, KeyRound, ShieldCheck, Users, X } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import { api } from '../lib/api';
 
@@ -11,10 +11,18 @@ interface User {
   created_at: string;
 }
 
-export default function UserManagement() {
+interface UserManagementProps {
+  readonly onPasswordChanged: () => void;
+}
+
+export default function UserManagement({ onPasswordChanged }: UserManagementProps) {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   useEffect(() => {
@@ -60,6 +68,42 @@ export default function UserManagement() {
     }
   }
 
+  async function handleChangePassword(event: React.FormEvent) {
+    event.preventDefault();
+    setError(null);
+    setPasswordMessage(null);
+
+    if (newPassword !== confirmPassword) {
+      setError('New password and confirmation do not match.');
+      return;
+    }
+
+    if (newPassword.length < 12) {
+      setError('New password must be at least 12 characters long.');
+      return;
+    }
+
+    setActionLoading('change-password');
+    try {
+      await api.post('/auth/change-password', {
+        current_password: currentPassword,
+        new_password: newPassword,
+        confirm_password: confirmPassword,
+      });
+
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setPasswordMessage('Password updated. Redirecting to login...');
+      setTimeout(onPasswordChanged, 800);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to update password';
+      setError(message);
+    } finally {
+      setActionLoading(null);
+    }
+  }
+
   const pendingUsers = users.filter(u => u.status === 'pending');
   const activeUsers = users.filter(u => u.status === 'active');
 
@@ -99,6 +143,76 @@ export default function UserManagement() {
           {error}
         </div>
       )}
+
+      {passwordMessage && (
+        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-300">
+          {passwordMessage}
+        </div>
+      )}
+
+      <section className="glass-panel-strong section-shell relative overflow-hidden">
+        <div className="ambient-orb -right-12 top-0 h-32 w-32 bg-sky-400/5 opacity-50" />
+        <div className="relative mb-6 flex items-center gap-3">
+          <div className="rounded-2xl bg-sky-500/15 p-3 text-sky-300">
+            <KeyRound className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="eyebrow text-sky-400/80">Account Security</p>
+            <h2 className="panel-title text-2xl">Change your password</h2>
+            <p className="mt-1 text-sm text-slate-400">
+              Update your own admin password. You will be signed out after the change.
+            </p>
+          </div>
+        </div>
+
+        <form onSubmit={handleChangePassword} className="relative grid gap-4 lg:grid-cols-3">
+          <label className="space-y-2 text-sm text-slate-300">
+            <span>Current password</span>
+            <input
+              type="password"
+              value={currentPassword}
+              onChange={(event) => setCurrentPassword(event.target.value)}
+              className="field-shell w-full"
+              required
+            />
+          </label>
+
+          <label className="space-y-2 text-sm text-slate-300">
+            <span>New password</span>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(event) => setNewPassword(event.target.value)}
+              className="field-shell w-full"
+              minLength={12}
+              required
+            />
+          </label>
+
+          <label className="space-y-2 text-sm text-slate-300">
+            <span>Confirm new password</span>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(event) => setConfirmPassword(event.target.value)}
+              className="field-shell w-full"
+              minLength={12}
+              required
+            />
+          </label>
+
+          <div className="lg:col-span-3">
+            <button
+              type="submit"
+              disabled={actionLoading === 'change-password'}
+              className="button-primary w-full sm:w-auto"
+            >
+              <KeyRound className="h-4 w-4" />
+              {actionLoading === 'change-password' ? 'Updating password...' : 'Update password'}
+            </button>
+          </div>
+        </form>
+      </section>
 
       {/* Pending Users Section */}
       {pendingUsers.length > 0 && (

@@ -1,7 +1,8 @@
 use axum::extract::{Path, State};
+use axum::http::HeaderMap;
 use axum::Json;
 use chrono::{Duration, Utc};
-use jsonwebtoken::{encode, EncodingKey, Header};
+use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -19,6 +20,13 @@ pub struct LoginRequest {
 pub struct RegisterRequest {
     pub username: String,
     pub password: String,
+}
+
+#[derive(Deserialize)]
+pub struct ChangePasswordRequest {
+    pub current_password: String,
+    pub new_password: String,
+    pub confirm_password: String,
 }
 
 #[derive(Serialize)]
@@ -125,6 +133,47 @@ pub async fn me(
         }))),
         None => Err(crate::errors::AppError::NotFound),
     }
+}
+
+pub async fn change_password(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Json(req): Json<ChangePasswordRequest>,
+) -> Result<Json<serde_json::Value>, crate::errors::AppError> {
+    let auth_header = headers
+        .get("authorization")
+        .and_then(|value| value.to_str().ok())
+        .ok_or(crate::errors::AppError::Unauthorized)?;
+
+    let token = auth_header
+        .strip_prefix("Bearer ")
+        .ok_or(crate::errors::AppError::Unauthorized)?;
+
+    let secret = std::env::var("JWT_SECRET").map_err(|_| crate::errors::AppError::InternalServerError)?;
+    let token_data = decode::<crate::services::auth_service::Claims>(
+        token,
+        &DecodingKey::from_secret(secret.as_bytes()),
+        &Validation::new(jsonwebtoken::Algorithm::HS256),
+    )
+    .map_err(|_| crate::errors::AppError::Unauthorized)?;
+
+    if token_data.claims.status != "active" {
+        return Err(crate::errors::AppError::Forbidden);
+    }
+
+    let user_service = UserService::new(state.user_repo);
+    user_service
+        .change_password(
+            &token_data.claims.sub,
+            &req.current_password,
+            &req.new_password,
+            &req.confirm_password,
+        )
+        .await?;
+
+    Ok(Json(json!({
+        "message": "Password updated successfully. Please sign in again."
+    })))
 }
 
 pub async fn approve_user(
