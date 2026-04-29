@@ -29,6 +29,14 @@ pub trait UserRepository: Send + Sync {
         id: &str,
         status: &str,
     ) -> Result<(), crate::errors::AppError>;
+
+    async fn update_password_role_status(
+        &self,
+        username: &str,
+        password_hash: &str,
+        role: &str,
+        status: &str,
+    ) -> Result<(), crate::errors::AppError>;
     
     async fn list_users(
         &self,
@@ -150,6 +158,32 @@ impl UserRepository for PgUserRepository {
             crate::errors::AppError::InternalServerError
         })?;
         
+        Ok(())
+    }
+
+    async fn update_password_role_status(
+        &self,
+        username: &str,
+        password_hash: &str,
+        role: &str,
+        status: &str,
+    ) -> Result<(), crate::errors::AppError> {
+        let now = Utc::now();
+        sqlx::query(
+            "UPDATE users SET password_hash = $1, role = $2, status = $3, updated_at = $4 WHERE username = $5"
+        )
+        .bind(password_hash)
+        .bind(role)
+        .bind(status)
+        .bind(now)
+        .bind(username)
+        .execute(&self.pool)
+        .await
+        .map_err(|e| {
+            tracing::error!("Database error updating user password/role/status: {e}");
+            crate::errors::AppError::InternalServerError
+        })?;
+
         Ok(())
     }
     

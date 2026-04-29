@@ -57,6 +57,29 @@ impl UserService {
         
         Ok(user)
     }
+
+    pub async fn ensure_admin(
+        &self,
+        username: &str,
+        password: &str,
+    ) -> Result<User, crate::errors::AppError> {
+        let password_hash = self.password_service.hash_password(password)?;
+
+        if let Some(mut user) = self.user_repo.find_by_username(username).await? {
+            self.user_repo
+                .update_password_role_status(username, &password_hash, "admin", "active")
+                .await?;
+
+            user.password_hash = password_hash;
+            user.role = "admin".to_string();
+            user.status = "active".to_string();
+            return Ok(user);
+        }
+
+        self.user_repo
+            .create_user(username, &password_hash, "admin", "active")
+            .await
+    }
     
     pub async fn authenticate_user(
         &self,
