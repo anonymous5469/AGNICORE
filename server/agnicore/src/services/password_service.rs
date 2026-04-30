@@ -49,9 +49,9 @@ impl PasswordService {
     
     /// Validate password strength
     pub fn validate_password_strength(password: &str) -> Result<(), crate::errors::AppError> {
-        if password.len() < 12 {
+        if password.len() < 8 {
             return Err(crate::errors::AppError::BadRequest(
-                "Password must be at least 12 characters long".to_string()
+                "Password must be at least 8 characters long".to_string()
             ));
         }
         

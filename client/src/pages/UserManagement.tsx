@@ -80,7 +80,7 @@ export default function UserManagement({ onPasswordChanged }: UserManagementProp
     }
 
     if (newPassword.length < 12) {
-      setError('New password must be at least 12 characters long.');
+      setError('New password must be at least 8 characters long.');
       return;
     }
 
@@ -214,7 +214,7 @@ export default function UserManagement({ onPasswordChanged }: UserManagementProp
               value={newPassword}
               onChange={(event) => setNewPassword(event.target.value)}
               className="input-glass w-full"
-              minLength={12}
+              minLength={8}
               required
             />
           </label>
@@ -226,7 +226,7 @@ export default function UserManagement({ onPasswordChanged }: UserManagementProp
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
               className="input-glass w-full"
-              minLength={12}
+              minLength={8}
               required
             />
           </label>

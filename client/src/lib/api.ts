@@ -21,7 +21,7 @@ export async function apiRequest<T>(
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ message: 'An unknown error occurred' }));
-    throw new Error(error.message || response.statusText);
+    throw new Error(error.message || error.error || response.statusText);
   }
 
   return response.json();

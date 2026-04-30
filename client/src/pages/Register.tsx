@@ -169,10 +169,10 @@ export default function Register({ onRegister }: RegisterProps) {
                   className="input-glass w-full pl-10"
                   placeholder="••••••••••••••••"
                   required
-                  minLength={12}
+                  minLength={8}
                 />
               </div>
-              <p className="text-xs text-slate-500 mt-1">Min 12 chars, uppercase, lowercase, number, special char</p>
+              <p className="text-xs text-slate-500 mt-1">Min 8 chars, uppercase, lowercase, number, special char</p>
             </div>
 
             <div className="space-y-2">
