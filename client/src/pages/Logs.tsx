@@ -45,64 +45,77 @@ export default function Logs() {
   }, []);
 
   if (isLoading) {
-    return <div className="flex h-96 items-center justify-center text-slate-400">Loading audit trail...</div>;
+    return (
+      <div className="space-y-10 py-4">
+        <div className="animate-pulse space-y-4">
+          <div className="h-4 w-40 bg-white/5 rounded-lg" />
+          <div className="h-16 w-[32rem] bg-white/5 rounded-2xl" />
+          <div className="h-6 w-96 bg-white/5 rounded-xl" />
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-32 bg-white/[0.03] rounded-2xl animate-pulse" />
+          ))}
+        </div>
+      </div>
+    );
   }
 
   const highSeverityCount = logs.filter((log) => log.severity === 'high').length;
   const verifyCount = logs.filter((log) => log.decision === 'VERIFY').length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10 py-4">
       <PageHeader
         eyebrow="Investigation Workspace"
         title="Trace the reason behind every policy decision."
         description="Security logs show where requests originated, how risky they appeared, and what AGNICORE did in response so analysts can review incidents with confidence."
       >
-        <div className="decision-badge border-rose-300/15 bg-rose-400/8 text-rose-100">
+        <div className="badge-v2 badge-deny px-4 py-2">
           <Siren className="h-4 w-4" />
-          {highSeverityCount} critical events
+          <span className="text-sm font-semibold">{highSeverityCount} critical events</span>
         </div>
       </PageHeader>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <div className="glass-panel-strong section-shell relative overflow-hidden transition-all duration-300 hover:scale-[1.02]">
-          <div className="ambient-orb -right-8 top-0 h-24 w-24 bg-rose-400/5 opacity-50" />
-          <p className="eyebrow text-rose-400/80">Denied attempts</p>
-          <p className="mt-3 text-4xl font-bold text-white tracking-tighter">{highSeverityCount}</p>
-          <p className="mt-2 text-xs font-medium text-slate-400">Critical policy blocks</p>
+        <div className="card p-6">
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-rose-400/60" />
+          <p className="text-caption mb-3">Denied attempts</p>
+          <p className="text-4xl font-semibold text-white tracking-tight">{highSeverityCount}</p>
+          <p className="mt-2 text-sm text-[#8a8a96]">Critical policy blocks</p>
         </div>
-        <div className="glass-panel-strong section-shell relative overflow-hidden transition-all duration-300 hover:scale-[1.02]">
-          <div className="ambient-orb -right-8 top-0 h-24 w-24 bg-amber-400/5 opacity-50" />
-          <p className="eyebrow text-amber-400/80">Verification prompts</p>
-          <p className="mt-3 text-4xl font-bold text-white tracking-tighter">{verifyCount}</p>
-          <p className="mt-2 text-xs font-medium text-slate-400">Step-up challenges issued</p>
+        <div className="card p-6">
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-amber-400/60" />
+          <p className="text-caption mb-3">Verification prompts</p>
+          <p className="text-4xl font-semibold text-white tracking-tight">{verifyCount}</p>
+          <p className="mt-2 text-sm text-[#8a8a96]">Step-up challenges issued</p>
         </div>
-        <div className="glass-panel-strong section-shell relative overflow-hidden transition-all duration-300 hover:scale-[1.02]">
-          <div className="ambient-orb -right-8 top-0 h-24 w-24 bg-emerald-400/5 opacity-50" />
-          <p className="eyebrow text-emerald-400/80">Audit coverage</p>
-          <p className="mt-3 text-4xl font-bold text-white tracking-tighter">100%</p>
-          <p className="mt-2 text-xs font-medium text-slate-400">Full contextual retention</p>
+        <div className="card p-6">
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-emerald-400/60" />
+          <p className="text-caption mb-3">Audit coverage</p>
+          <p className="text-4xl font-semibold text-white tracking-tight">100%</p>
+          <p className="mt-2 text-sm text-[#8a8a96]">Full contextual retention</p>
         </div>
       </div>
 
-      <section className="glass-panel-strong section-shell relative overflow-hidden">
-        <div className="ambient-orb -left-12 top-0 h-48 w-48 bg-white/5 opacity-30" />
-        <div className="relative mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <section className="card-elevated p-6">
+        <div className="mb-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
-            <p className="eyebrow text-sky-400/80">Decision Ledger</p>
-            <h2 className="panel-title text-2xl font-bold tracking-tight">Analyst review stream</h2>
+            <p className="eyebrow-v2 mb-2">Decision Ledger</p>
+            <h2 className="heading-section text-2xl">Analyst review stream</h2>
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative">
-              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#5a5a66]" />
               <input
                 type="text"
                 placeholder="Search-ready layout"
-                className="field-shell w-full pl-11 sm:w-56"
+                className="input-clean w-full sm:w-56 pl-10"
                 readOnly
               />
             </div>
-            <button className="button-secondary">
+            <button className="btn-secondary-v2">
               <ShieldCheck className="h-4 w-4" />
               Filters coming next
             </button>
@@ -110,15 +123,15 @@ export default function Logs() {
         </div>
 
         <div className="overflow-x-auto scrollbar-subtle">
-          <table className="min-w-full border-separate border-spacing-y-3">
+          <table className="min-w-full border-separate border-spacing-y-2">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-[0.24em] text-slate-500">
-                <th className="px-4 py-2 font-medium">Timestamp</th>
-                <th className="px-4 py-2 font-medium">Actor</th>
-                <th className="px-4 py-2 font-medium">Context</th>
-                <th className="px-4 py-2 font-medium">Risk</th>
-                <th className="px-4 py-2 font-medium">Decision</th>
-                <th className="px-4 py-2 font-medium">Reason</th>
+              <tr className="text-left border-b border-[rgba(255,255,255,0.06)]">
+                <th className="px-4 py-3 text-caption">Timestamp</th>
+                <th className="px-4 py-3 text-caption">Actor</th>
+                <th className="px-4 py-3 text-caption">Context</th>
+                <th className="px-4 py-3 text-caption">Risk</th>
+                <th className="px-4 py-3 text-caption">Decision</th>
+                <th className="px-4 py-3 text-caption">Reason</th>
               </tr>
             </thead>
             <tbody>
@@ -128,41 +141,41 @@ export default function Logs() {
                 const DecisionIcon = decisionMeta.icon;
 
                 return (
-                  <tr key={log.id} className="glass-inset">
-                    <td className="rounded-l-[22px] px-4 py-4 align-top text-sm text-slate-300">
-                      <div>{log.timestamp}</div>
-                      <div className="mt-2 text-xs text-slate-500">{log.location}</div>
+                  <tr key={log.id} className="group transition-all duration-200 hover:bg-[rgba(255,255,255,0.02)]">
+                    <td className="px-4 py-4 align-top">
+                      <div className="text-sm text-[#f0f0f5]">{log.timestamp}</div>
+                      <div className="mt-1.5 text-xs text-[#5a5a66]">{log.location}</div>
                     </td>
                     <td className="px-4 py-4 align-top">
-                      <div className="text-sm font-medium text-white">{log.user}</div>
-                      <div className="mt-2 text-xs font-mono text-slate-400">{log.ip}</div>
-                      <div className="mt-2 text-xs text-slate-500">{log.device}</div>
+                      <div className="text-sm font-medium text-[#f0f0f5]">{log.user}</div>
+                      <div className="mt-1.5 text-xs font-mono text-[#8a8a96]">{log.ip}</div>
+                      <div className="mt-1.5 text-xs text-[#5a5a66]">{log.device}</div>
                     </td>
-                    <td className="px-4 py-4 align-top text-sm text-slate-300">
-                      <div className="font-medium text-white">{log.resource}</div>
-                      <div className="mt-2 text-xs uppercase tracking-[0.24em] text-slate-500">
+                    <td className="px-4 py-4 align-top">
+                      <div className="text-sm font-medium text-[#f0f0f5]">{log.resource}</div>
+                      <div className="mt-1.5 text-xs uppercase tracking-[0.15em] text-[#5a5a66]">
                         {log.severity} severity
                       </div>
                     </td>
                     <td className="px-4 py-4 align-top">
-                      <div className={`decision-badge ${riskMeta.toneClassName}`}>
+                      <div className={`badge-v2 ${riskMeta.toneClassName}`}>
                         {log.riskScore} / {riskMeta.label}
                       </div>
                     </td>
                     <td className="px-4 py-4 align-top">
-                      <div className={`decision-badge ${decisionMeta.badgeClassName}`}>
-                        <DecisionIcon className="h-4 w-4" />
+                      <div className={`badge-v2 ${decisionMeta.badgeClassName}`}>
+                        <DecisionIcon className="h-3.5 w-3.5" />
                         {log.decision}
                       </div>
                     </td>
-                    <td className="rounded-r-[22px] px-4 py-4 align-top text-sm leading-7 text-slate-300">
+                    <td className="px-4 py-4 align-top">
                       <div className="flex items-start gap-2">
                         {log.decision === 'DENY' ? (
-                          <ShieldX className="mt-1 h-4 w-4 shrink-0 text-rose-200" />
+                          <ShieldX className="mt-0.5 h-4 w-4 shrink-0 text-rose-400" />
                         ) : (
-                          <ShieldCheck className="mt-1 h-4 w-4 shrink-0 text-emerald-200" />
+                          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
                         )}
-                        <span>{log.reason}</span>
+                        <span className="text-sm text-[#8a8a96]">{log.reason}</span>
                       </div>
                     </td>
                   </tr>

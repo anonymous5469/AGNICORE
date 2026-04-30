@@ -80,35 +80,32 @@ export default function RequestsTable({ requests }: RequestsTableProps) {
   const renderSortIcon = (field: SortField) => {
     if (sortField !== field) return null;
     return sortOrder === 'asc' ? (
-      <ChevronUp className="h-3 w-3" />
+      <ChevronUp className="h-3.5 w-3.5" />
     ) : (
-      <ChevronDown className="h-3 w-3" />
+      <ChevronDown className="h-3.5 w-3.5" />
     );
   };
 
   return (
-    <section className="glass-panel-strong section-shell relative overflow-hidden">
-      {/* Ambient background effect */}
-      <div className="ambient-orb -left-20 -top-20 h-64 w-64 bg-sky-400/5 opacity-40" />
-      
-      <div className="relative mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div className="space-y-2">
-          <p className="eyebrow text-sky-400/80">Recent Requests</p>
-          <h2 className="panel-title text-2xl">Live analyst feed</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-7 text-slate-400">
+    <section>
+      <div className="mb-8 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+        <div>
+          <p className="eyebrow-v2 mb-2">Recent Requests</p>
+          <h2 className="heading-section mb-2">Live analyst feed</h2>
+          <p className="text-body max-w-xl">
             Search, sort, and inspect requests to understand what pushed each decision.
           </p>
         </div>
 
         <div className="flex flex-col gap-3 lg:min-w-[420px]">
-          <div className="relative group">
-            <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 group-focus-within:text-sky-400 transition-colors" />
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#5a5a66]" />
             <input
               type="text"
               placeholder="Search actor or resource"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              className="field-shell w-full pl-11 transition-all focus:shadow-[0_0_20px_rgba(115,196,255,0.1)]"
+              className="input-clean w-full pl-10"
             />
           </div>
           <div className="flex flex-wrap gap-2">
@@ -116,10 +113,10 @@ export default function RequestsTable({ requests }: RequestsTableProps) {
               <button
                 key={level}
                 onClick={() => setRiskFilter(level)}
-                className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-all duration-300 ${
+                className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-200 ${
                   riskFilter === level
-                    ? 'bg-white/15 text-white shadow-[0_0_16px_rgba(255,255,255,0.1)]'
-                    : 'border border-white/10 bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white hover:shadow-[0_0_12px_rgba(255,255,255,0.05)]'
+                    ? 'bg-[#d4a853] text-[#0a0a0f]'
+                    : 'bg-[#12121a] text-[#8a8a96] border border-[rgba(255,255,255,0.06)] hover:border-[rgba(255,255,255,0.12)] hover:text-[#f0f0f5]'
                 }`}
               >
                 {level}
@@ -132,40 +129,30 @@ export default function RequestsTable({ requests }: RequestsTableProps) {
       <div className="relative overflow-x-auto scrollbar-subtle">
         <table className="min-w-full border-separate border-spacing-y-2">
           <thead>
-            <tr className="text-left">
-              <th className="px-4 py-3 text-xs font-bold uppercase tracking-[0.24em] text-slate-500">
-                Identity
-              </th>
-              <th className="px-4 py-3 text-xs font-bold uppercase tracking-[0.24em] text-slate-500">
-                Resource
-              </th>
-              <th className="px-4 py-3 text-xs font-bold uppercase tracking-[0.24em] text-slate-500">
-                Context
-              </th>
-              <th className="px-4 py-3 text-xs font-bold uppercase tracking-[0.24em] text-slate-500">
+            <tr className="text-left border-b border-[rgba(255,255,255,0.06)]">
+              <th className="px-4 py-3 text-caption">Identity</th>
+              <th className="px-4 py-3 text-caption">Resource</th>
+              <th className="px-4 py-3 text-caption">Context</th>
+              <th className="px-4 py-3 text-caption">
                 <button
                   onClick={() => toggleSort('riskScore')}
-                  className="flex items-center gap-1 text-left hover:text-sky-400 transition-colors"
+                  className="flex items-center gap-1.5 hover:text-[#d4a853] transition-colors"
                 >
                   Risk
                   {renderSortIcon('riskScore')}
                 </button>
               </th>
-              <th className="px-4 py-3 text-xs font-bold uppercase tracking-[0.24em] text-slate-500">
-                Decision
-              </th>
-              <th className="px-4 py-3 text-xs font-bold uppercase tracking-[0.24em] text-slate-500">
+              <th className="px-4 py-3 text-caption">Decision</th>
+              <th className="px-4 py-3 text-caption">
                 <button
                   onClick={() => toggleSort('time')}
-                  className="flex items-center gap-1 text-left hover:text-sky-400 transition-colors"
+                  className="flex items-center gap-1.5 hover:text-[#d4a853] transition-colors"
                 >
                   Time
                   {renderSortIcon('time')}
                 </button>
               </th>
-              <th className="px-4 py-3 text-center text-xs font-bold uppercase tracking-[0.24em] text-slate-500">
-                Inspect
-              </th>
+              <th className="px-4 py-3 text-center text-caption">Inspect</th>
             </tr>
           </thead>
           <tbody>
@@ -177,49 +164,46 @@ export default function RequestsTable({ requests }: RequestsTableProps) {
               return (
                 <tr
                   key={request.id}
-                  className="group relative transition-all duration-300 hover:translate-x-1"
+                  className="group relative transition-all duration-200 hover:bg-[rgba(255,255,255,0.02)]"
                 >
-                  {/* Row background with glass effect */}
-                  <td colSpan={7} className="absolute inset-0 rounded-2xl glass-inset opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
-                  
                   {/* Left accent border on hover */}
-                  <div className={`absolute left-0 top-2 bottom-2 w-[3px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
+                  <div className={`absolute left-0 top-2 bottom-2 w-[2px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
                     request.riskScore > 60 ? 'bg-rose-400' : 
                     request.riskScore > 30 ? 'bg-amber-400' : 'bg-emerald-400'
                   }`} />
                   
                   <td className="px-4 py-4 align-top">
-                    <div className="text-sm font-medium text-white">{request.user}</div>
-                    <div className="mt-1.5 text-xs font-mono text-slate-500">{request.ip}</div>
+                    <div className="text-sm font-medium text-[#f0f0f5]">{request.user}</div>
+                    <div className="mt-1.5 text-xs font-mono text-[#5a5a66]">{request.ip}</div>
                   </td>
                   <td className="px-4 py-4 align-top">
-                    <div className="text-sm font-medium text-white">{request.resource}</div>
-                    <div className="mt-1.5 text-xs uppercase tracking-[0.24em] text-slate-500">
+                    <div className="text-sm font-medium text-[#f0f0f5]">{request.resource}</div>
+                    <div className="mt-1.5 text-xs uppercase tracking-[0.15em] text-[#5a5a66]">
                       {request.action}
                     </div>
                   </td>
                   <td className="px-4 py-4 align-top">
-                    <div className="text-sm text-slate-300">{request.device}</div>
-                    <div className="mt-1.5 text-xs text-slate-500">{request.location}</div>
+                    <div className="text-sm text-[#8a8a96]">{request.device}</div>
+                    <div className="mt-1.5 text-xs text-[#5a5a66]">{request.location}</div>
                   </td>
                   <td className="px-4 py-4 align-top">
-                    <div className={`glass-badge ${riskMeta.toneClassName}`}>
+                    <div className={`badge-v2 ${riskMeta.toneClassName}`}>
                       {request.riskScore} / {riskMeta.label}
                     </div>
                   </td>
                   <td className="px-4 py-4 align-top">
-                    <div className={`glass-badge ${decisionMeta.badgeClassName}`}>
+                    <div className={`badge-v2 ${decisionMeta.badgeClassName}`}>
                       <DecisionIcon className="h-3.5 w-3.5" />
                       {request.decision}
                     </div>
                   </td>
-                  <td className="px-4 py-4 align-top text-sm text-slate-400">
+                  <td className="px-4 py-4 align-top text-sm text-[#8a8a96]">
                     {request.time}
                   </td>
                   <td className="px-4 py-4 align-top text-center">
                     <button
                       onClick={() => setSelectedRequest(request)}
-                      className="inline-flex rounded-xl border border-white/10 bg-white/5 p-2.5 text-slate-400 transition-all duration-300 hover:bg-white/10 hover:text-white hover:shadow-[0_0_16px_rgba(255,255,255,0.1)] hover:scale-110"
+                      className="inline-flex rounded-lg bg-[#12121a] border border-[rgba(255,255,255,0.06)] p-2.5 text-[#8a8a96] transition-all duration-200 hover:bg-[#1a1a24] hover:text-[#f0f0f5] hover:border-[rgba(255,255,255,0.12)]"
                     >
                       <Eye className="h-4 w-4" />
                     </button>
@@ -232,52 +216,49 @@ export default function RequestsTable({ requests }: RequestsTableProps) {
       </div>
 
       {filteredAndSorted.length === 0 ? (
-        <div className="relative mt-4 rounded-2xl border border-white/8 bg-black/10 px-4 py-8 text-center text-sm text-slate-400">
+        <div className="mt-6 rounded-xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] px-4 py-10 text-center text-sm text-[#8a8a96]">
           No requests matched the current filters.
         </div>
       ) : null}
 
       {selectedRequest ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xl">
-          <div className="glass-panel-strong w-full max-w-2xl rounded-[30px] p-8 shadow-2xl relative overflow-hidden">
-            {/* Ambient orb */}
-            <div className="ambient-orb -right-20 -top-20 h-48 w-48 bg-sky-400/10 opacity-40" />
-            
-            <div className="relative mb-6 flex items-start justify-between gap-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+          <div className="card-elevated w-full max-w-2xl p-8 relative">
+            <div className="mb-8 flex items-start justify-between gap-4">
               <div>
-                <p className="eyebrow text-sky-400/80">Request Detail</p>
-                <h3 className="mt-2 text-2xl font-bold tracking-tight text-white">
+                <p className="eyebrow-v2 mb-2">Request Detail</p>
+                <h3 className="text-2xl font-semibold text-white">
                   {selectedRequest.user}
                 </h3>
               </div>
               <button
                 onClick={() => setSelectedRequest(null)}
-                className="button-secondary !rounded-full !p-3 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                className="btn-secondary-v2 !rounded-full !p-2.5"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="glass-inset rounded-[24px] p-5 relative overflow-hidden group hover:bg-white/[0.04] transition-colors">
-                <p className="eyebrow">Identity</p>
-                <p className="mt-3 text-lg font-bold text-white">{selectedRequest.user}</p>
-                <p className="mt-2 text-sm font-mono text-slate-400">{selectedRequest.ip}</p>
+              <div className="card p-5">
+                <p className="text-caption mb-3">Identity</p>
+                <p className="text-lg font-semibold text-white">{selectedRequest.user}</p>
+                <p className="mt-2 text-sm font-mono text-[#8a8a96]">{selectedRequest.ip}</p>
               </div>
-              <div className="glass-inset rounded-[24px] p-5 relative overflow-hidden group hover:bg-white/[0.04] transition-colors">
-                <p className="eyebrow">Request shape</p>
-                <p className="mt-3 text-lg font-bold text-white">{selectedRequest.resource}</p>
-                <p className="mt-2 text-sm text-slate-300">{selectedRequest.action}</p>
+              <div className="card p-5">
+                <p className="text-caption mb-3">Request shape</p>
+                <p className="text-lg font-semibold text-white">{selectedRequest.resource}</p>
+                <p className="mt-2 text-sm text-[#8a8a96]">{selectedRequest.action}</p>
               </div>
-              <div className="glass-inset rounded-[24px] p-5 relative overflow-hidden group hover:bg-white/[0.04] transition-colors">
-                <p className="eyebrow">Risk snapshot</p>
-                <div className={`mt-3 glass-badge ${getRiskMeta(selectedRequest.riskScore).toneClassName}`}>
+              <div className="card p-5">
+                <p className="text-caption mb-3">Risk snapshot</p>
+                <div className={`badge-v2 ${getRiskMeta(selectedRequest.riskScore).toneClassName}`}>
                   {selectedRequest.riskScore} / {getRiskMeta(selectedRequest.riskScore).label}
                 </div>
               </div>
-              <div className="glass-inset rounded-[24px] p-5 relative overflow-hidden group hover:bg-white/[0.04] transition-colors">
-                <p className="eyebrow">Decision</p>
-                <div className={`mt-3 glass-badge ${getDecisionMeta(selectedRequest.decision).badgeClassName}`}>
+              <div className="card p-5">
+                <p className="text-caption mb-3">Decision</p>
+                <div className={`badge-v2 ${getDecisionMeta(selectedRequest.decision).badgeClassName}`}>
                   {selectedRequest.decision === 'DENY' ? (
                     <ShieldX className="h-3.5 w-3.5" />
                   ) : (
@@ -288,13 +269,13 @@ export default function RequestsTable({ requests }: RequestsTableProps) {
               </div>
             </div>
 
-            <div className="mt-4 glass-inset rounded-[24px] p-5 relative overflow-hidden">
-              <p className="eyebrow">Primary factors</p>
-              <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-4 card p-5">
+              <p className="text-caption mb-4">Primary factors</p>
+              <div className="flex flex-wrap gap-2">
                 {getRiskFactors(selectedRequest).map((factor) => (
                   <span
                     key={factor}
-                    className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium uppercase tracking-[0.16em] text-slate-200 hover:bg-white/10 hover:border-white/20 transition-all"
+                    className="rounded-full border border-[rgba(255,255,255,0.06)] bg-[#12121a] px-3 py-2 text-xs font-medium text-[#8a8a96]"
                   >
                     {factor}
                   </span>

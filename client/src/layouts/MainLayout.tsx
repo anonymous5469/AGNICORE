@@ -22,10 +22,7 @@ export default function MainLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="relative min-h-screen">
-      <div className="ambient-orb left-10 top-24 h-40 w-40 bg-sky-400/10" />
-      <div className="ambient-orb right-10 top-80 h-48 w-48 bg-rose-500/10" />
-
+    <div className="relative min-h-screen bg-[#0a0a0f]">
       <Navbar
         currentPage={currentPage}
         onLogout={onLogout}
@@ -34,8 +31,8 @@ export default function MainLayout({
       />
 
       <div className="page-grid pt-5">
-        <div className="flex gap-6">
-          <div className="hidden xl:block xl:w-[280px] xl:shrink-0">
+        <div className="flex gap-8">
+          <div className="hidden xl:block xl:w-[260px] xl:shrink-0">
             <Sidebar 
               currentPage={currentPage} 
               onNavigate={onNavigate} 
@@ -50,7 +47,7 @@ export default function MainLayout({
       {isSidebarOpen ? (
         <div className="fixed inset-0 z-50 xl:hidden">
           <button
-            className="absolute inset-0 bg-black/55 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={() => setIsSidebarOpen(false)}
             aria-label="Close navigation"
           />

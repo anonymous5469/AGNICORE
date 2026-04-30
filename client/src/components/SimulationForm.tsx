@@ -31,18 +31,18 @@ export default function SimulationForm({ onSimulate }: SimulationFormProps) {
         : 'Request pattern remains within normal bounds.';
 
   return (
-    <form onSubmit={handleSubmit} className="glass-panel-strong section-shell space-y-6">
-      <div className="space-y-3">
-        <p className="eyebrow">Request Composer</p>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="card-elevated p-6 space-y-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="panel-title text-2xl">Simulate an access request</h2>
-            <p className="mt-2 max-w-xl text-sm leading-7 text-slate-300">
+            <p className="eyebrow-v2 mb-2">Request Composer</p>
+            <h2 className="heading-section text-2xl">Simulate an access request</h2>
+            <p className="text-body mt-2 max-w-xl">
               Adjust context, device trust, and behavior to see how AGNICORE moves from signal
               intake to final policy decision.
             </p>
           </div>
-          <button type="submit" className="button-primary">
+          <button type="submit" className="btn-primary-v2">
             <Radar className="h-4 w-4" />
             Run evaluation
           </button>
@@ -50,41 +50,41 @@ export default function SimulationForm({ onSimulate }: SimulationFormProps) {
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
-        <section className="glass-inset rounded-[24px] p-4">
-          <div className="mb-4 flex items-center gap-3">
-            <div className="rounded-2xl bg-sky-400/10 p-3 text-sky-200">
+        <section className="card p-5">
+          <div className="mb-5 flex items-center gap-3">
+            <div className="rounded-xl bg-sky-500/10 p-2.5 text-sky-400">
               <Cpu className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm font-medium text-white">Identity and device trust</p>
-              <p className="text-xs text-slate-400">Endpoint posture and intended action</p>
+              <p className="text-sm font-semibold text-[#f0f0f5]">Identity and device trust</p>
+              <p className="text-xs text-[#5a5a66]">Endpoint posture and intended action</p>
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="space-y-2 text-sm text-slate-300">
-              <span>Device type</span>
+            <label className="space-y-2">
+              <span className="text-sm text-[#8a8a96]">Device type</span>
               <select
                 value={device}
                 onChange={(event) => setDevice(event.target.value)}
-                className="field-shell w-full"
+                className="input-clean w-full"
               >
                 {deviceOptions.map((option) => (
-                  <option key={option} value={option} className="bg-slate-900">
+                  <option key={option} value={option} className="bg-[#12121a]">
                     {option}
                   </option>
                 ))}
               </select>
             </label>
 
-            <label className="space-y-2 text-sm text-slate-300">
-              <span>Action requested</span>
+            <label className="space-y-2">
+              <span className="text-sm text-[#8a8a96]">Action requested</span>
               <select
                 value={action}
                 onChange={(event) => setAction(event.target.value)}
-                className="field-shell w-full"
+                className="input-clean w-full"
               >
                 {actionOptions.map((option) => (
-                  <option key={option} value={option} className="bg-slate-900">
+                  <option key={option} value={option} className="bg-[#12121a]">
                     {option}
                   </option>
                 ))}
@@ -93,41 +93,41 @@ export default function SimulationForm({ onSimulate }: SimulationFormProps) {
           </div>
         </section>
 
-        <section className="glass-inset rounded-[24px] p-4">
-          <div className="mb-4 flex items-center gap-3">
-            <div className="rounded-2xl bg-amber-300/10 p-3 text-amber-100">
+        <section className="card p-5">
+          <div className="mb-5 flex items-center gap-3">
+            <div className="rounded-xl bg-amber-500/10 p-2.5 text-amber-400">
               <MapPinned className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm font-medium text-white">Context and sensitivity</p>
-              <p className="text-xs text-slate-400">Location confidence and resource profile</p>
+              <p className="text-sm font-semibold text-[#f0f0f5]">Context and sensitivity</p>
+              <p className="text-xs text-[#5a5a66]">Location confidence and resource profile</p>
             </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="space-y-2 text-sm text-slate-300">
-              <span>Location confidence</span>
+            <label className="space-y-2">
+              <span className="text-sm text-[#8a8a96]">Location confidence</span>
               <select
                 value={location}
                 onChange={(event) => setLocation(event.target.value)}
-                className="field-shell w-full"
+                className="input-clean w-full"
               >
                 {locationOptions.map((option) => (
-                  <option key={option} value={option} className="bg-slate-900">
+                  <option key={option} value={option} className="bg-[#12121a]">
                     {option}
                   </option>
                 ))}
               </select>
             </label>
 
-            <label className="space-y-2 text-sm text-slate-300">
-              <span>Resource sensitivity</span>
+            <label className="space-y-2">
+              <span className="text-sm text-[#8a8a96]">Resource sensitivity</span>
               <select
                 value={sensitivity}
                 onChange={(event) => setSensitivity(event.target.value)}
-                className="field-shell w-full"
+                className="input-clean w-full"
               >
                 {sensitivityOptions.map((option) => (
-                  <option key={option} value={option} className="bg-slate-900">
+                  <option key={option} value={option} className="bg-[#12121a]">
                     {option}
                   </option>
                 ))}
@@ -137,44 +137,51 @@ export default function SimulationForm({ onSimulate }: SimulationFormProps) {
         </section>
       </div>
 
-      <section className="glass-inset rounded-[24px] p-4">
-        <div className="mb-4 flex items-center gap-3">
-          <div className="rounded-2xl bg-rose-400/10 p-3 text-rose-100">
+      <section className="card p-5">
+        <div className="mb-5 flex items-center gap-3">
+          <div className="rounded-xl bg-rose-500/10 p-2.5 text-rose-400">
             <ShieldEllipsis className="h-5 w-5" />
           </div>
           <div>
-            <p className="text-sm font-medium text-white">Behavior pressure</p>
-            <p className="text-xs text-slate-400">How far the request deviates from baseline</p>
+            <p className="text-sm font-semibold text-[#f0f0f5]">Behavior pressure</p>
+            <p className="text-xs text-[#5a5a66]">How far the request deviates from baseline</p>
           </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="flex items-center justify-between text-sm text-slate-300">
-            <span>Request frequency</span>
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-medium text-white">
+        <div className="space-y-5">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-[#8a8a96]">Request frequency</span>
+            <span className="rounded-full bg-[#12121a] border border-[rgba(255,255,255,0.06)] px-3 py-1 text-sm font-medium text-[#f0f0f5]">
               {requestFrequency}/100
             </span>
           </div>
-          <input
-            type="range"
-            min="1"
-            max="100"
-            value={requestFrequency}
-            onChange={(event) => setRequestFrequency(Number(event.target.value))}
-            className="w-full accent-rose-400"
-          />
+          
+          <div className="relative">
+            <input
+              type="range"
+              min="1"
+              max="100"
+              value={requestFrequency}
+              onChange={(event) => setRequestFrequency(Number(event.target.value))}
+              className="w-full h-2 rounded-lg appearance-none cursor-pointer bg-[#1a1a24] accent-[#d4a853]"
+              style={{
+                background: `linear-gradient(to right, #d4a853 0%, #d4a853 ${requestFrequency}%, #1a1a24 ${requestFrequency}%, #1a1a24 100%)`
+              }}
+            />
+          </div>
+          
           <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-2xl border border-white/8 bg-black/10 p-3">
-              <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Low drift</p>
-              <p className="mt-2 text-sm text-slate-300">Baseline-aligned request behavior.</p>
+            <div className="card p-3.5">
+              <p className="text-caption mb-2">Low drift</p>
+              <p className="text-sm text-[#8a8a96]">Baseline-aligned request behavior.</p>
             </div>
-            <div className="rounded-2xl border border-white/8 bg-black/10 p-3">
-              <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Current read</p>
-              <p className="mt-2 text-sm text-slate-200">{postureText}</p>
+            <div className="card p-3.5 border-[rgba(212,168,83,0.15)]">
+              <p className="text-caption mb-2">Current read</p>
+              <p className="text-sm text-[#f0f0f5]">{postureText}</p>
             </div>
-            <div className="rounded-2xl border border-white/8 bg-black/10 p-3">
-              <p className="text-xs uppercase tracking-[0.24em] text-slate-500">High drift</p>
-              <p className="mt-2 text-sm text-slate-300">Triggers stronger controls and review.</p>
+            <div className="card p-3.5">
+              <p className="text-caption mb-2">High drift</p>
+              <p className="text-sm text-[#8a8a96]">Triggers stronger controls and review.</p>
             </div>
           </div>
         </div>

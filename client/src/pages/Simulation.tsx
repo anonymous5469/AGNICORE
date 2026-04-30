@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Cpu, Fingerprint, Shield, Waypoints } from 'lucide-react';
 import EvaluationPanel from '../components/EvaluationPanel';
 import PageHeader from '../components/PageHeader';
 import SimulationForm from '../components/SimulationForm';
@@ -71,34 +70,14 @@ export default function Simulation() {
 
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <PageHeader
         eyebrow="Simulation Lab"
         title="Compose a request and watch the trust engine respond."
-        description="This interactive lab mirrors AGNICORE’s methodology so analysts can test how context, device posture, and behavior drift affect the final access decision."
-      >
-        <div className="flex gap-2">
-          {[
-            { icon: Fingerprint, label: 'Identity' },
-            { icon: Cpu, label: 'Context' },
-            { icon: Waypoints, label: 'Risk' },
-            { icon: Shield, label: 'Policy' },
-          ].map((item) => {
-            const Icon = item.icon;
-            return (
-              <div
-                key={item.label}
-                className="hidden rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-slate-300 sm:flex sm:items-center sm:gap-2"
-              >
-                <Icon className="h-3.5 w-3.5" />
-                {item.label}
-              </div>
-            );
-          })}
-        </div>
-      </PageHeader>
+        description="This interactive lab mirrors AGNICORE's methodology so analysts can test how context, device posture, and behavior drift affect the final access decision."
+      />
 
-      <div className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr]">
+      <div className="grid gap-8 xl:grid-cols-[1.08fr_0.92fr]">
         <SimulationForm onSimulate={handleSimulate} />
         <EvaluationPanel result={result} />
       </div>
