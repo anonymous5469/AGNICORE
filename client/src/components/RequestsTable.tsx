@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
 import { ChevronDown, ChevronUp, Eye, Search, X, ShieldCheck, ShieldX } from 'lucide-react';
 import { AccessRequest } from '../types';
 import { getDecisionMeta, getRiskMeta } from '../lib/ui';
@@ -90,69 +91,71 @@ export default function RequestsTable({ requests }: RequestsTableProps) {
     <section>
       <div className="mb-8 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
         <div>
-          <p className="eyebrow-v2 mb-2">Recent Requests</p>
-          <h2 className="heading-section mb-2">Live analyst feed</h2>
-          <p className="text-body max-w-xl">
+          <p className="eyebrow-glass mb-2">Recent Requests</p>
+          <h2 className="heading-section-glass mb-2">Live analyst feed</h2>
+          <p className="text-slate-400 max-w-xl">
             Search, sort, and inspect requests to understand what pushed each decision.
           </p>
         </div>
 
         <div className="flex flex-col gap-3 lg:min-w-[420px]">
           <div className="relative">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#5a5a66]" />
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-600" />
             <input
               type="text"
               placeholder="Search actor or resource"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              className="input-clean w-full pl-10"
+              className="input-glass w-full pl-10"
             />
           </div>
           <div className="flex flex-wrap gap-2">
             {riskFilters.map((level) => (
-              <button
+              <motion.button
                 key={level}
                 onClick={() => setRiskFilter(level)}
                 className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-200 ${
                   riskFilter === level
-                    ? 'bg-[#d4a853] text-[#0a0a0f]'
-                    : 'bg-[#12121a] text-[#8a8a96] border border-[rgba(255,255,255,0.06)] hover:border-[rgba(255,255,255,0.12)] hover:text-[#f0f0f5]'
+                    ? 'bg-blue-500 text-white'
+                    : 'glass text-slate-400 hover:text-white'
                 }`}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 {level}
-              </button>
+              </motion.button>
             ))}
           </div>
         </div>
       </div>
 
-      <div className="relative overflow-x-auto scrollbar-subtle">
+      <div className="relative overflow-x-auto scrollbar-glass">
         <table className="min-w-full border-separate border-spacing-y-2">
           <thead>
-            <tr className="text-left border-b border-[rgba(255,255,255,0.06)]">
-              <th className="px-4 py-3 text-caption">Identity</th>
-              <th className="px-4 py-3 text-caption">Resource</th>
-              <th className="px-4 py-3 text-caption">Context</th>
-              <th className="px-4 py-3 text-caption">
+            <tr className="text-left border-b border-white/5">
+              <th className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Identity</th>
+              <th className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Resource</th>
+              <th className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Context</th>
+              <th className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
                 <button
                   onClick={() => toggleSort('riskScore')}
-                  className="flex items-center gap-1.5 hover:text-[#d4a853] transition-colors"
+                  className="flex items-center gap-1.5 hover:text-blue-400 transition-colors"
                 >
                   Risk
                   {renderSortIcon('riskScore')}
                 </button>
               </th>
-              <th className="px-4 py-3 text-caption">Decision</th>
-              <th className="px-4 py-3 text-caption">
+              <th className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Decision</th>
+              <th className="px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
                 <button
                   onClick={() => toggleSort('time')}
-                  className="flex items-center gap-1.5 hover:text-[#d4a853] transition-colors"
+                  className="flex items-center gap-1.5 hover:text-blue-400 transition-colors"
                 >
                   Time
                   {renderSortIcon('time')}
                 </button>
               </th>
-              <th className="px-4 py-3 text-center text-caption">Inspect</th>
+              <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Inspect</th>
             </tr>
           </thead>
           <tbody>
@@ -164,49 +167,50 @@ export default function RequestsTable({ requests }: RequestsTableProps) {
               return (
                 <tr
                   key={request.id}
-                  className="group relative transition-all duration-200 hover:bg-[rgba(255,255,255,0.02)]"
+                  className="group relative transition-all duration-200 hover:bg-white/[0.02]"
                 >
-                  {/* Left accent border on hover */}
                   <div className={`absolute left-0 top-2 bottom-2 w-[2px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
-                    request.riskScore > 60 ? 'bg-rose-400' : 
+                    request.riskScore > 60 ? 'bg-red-400' : 
                     request.riskScore > 30 ? 'bg-amber-400' : 'bg-emerald-400'
                   }`} />
                   
                   <td className="px-4 py-4 align-top">
-                    <div className="text-sm font-medium text-[#f0f0f5]">{request.user}</div>
-                    <div className="mt-1.5 text-xs font-mono text-[#5a5a66]">{request.ip}</div>
+                    <div className="text-sm font-medium text-white">{request.user}</div>
+                    <div className="mt-1.5 text-xs font-mono text-slate-600">{request.ip}</div>
                   </td>
                   <td className="px-4 py-4 align-top">
-                    <div className="text-sm font-medium text-[#f0f0f5]">{request.resource}</div>
-                    <div className="mt-1.5 text-xs uppercase tracking-[0.15em] text-[#5a5a66]">
+                    <div className="text-sm font-medium text-white">{request.resource}</div>
+                    <div className="mt-1.5 text-xs uppercase tracking-[0.15em] text-slate-600">
                       {request.action}
                     </div>
                   </td>
                   <td className="px-4 py-4 align-top">
-                    <div className="text-sm text-[#8a8a96]">{request.device}</div>
-                    <div className="mt-1.5 text-xs text-[#5a5a66]">{request.location}</div>
+                    <div className="text-sm text-slate-400">{request.device}</div>
+                    <div className="mt-1.5 text-xs text-slate-600">{request.location}</div>
                   </td>
                   <td className="px-4 py-4 align-top">
-                    <div className={`badge-v2 ${riskMeta.toneClassName}`}>
+                    <div className={`badge-glass ${riskMeta.toneClassName}`}>
                       {request.riskScore} / {riskMeta.label}
                     </div>
                   </td>
                   <td className="px-4 py-4 align-top">
-                    <div className={`badge-v2 ${decisionMeta.badgeClassName}`}>
+                    <div className={`badge-glass ${decisionMeta.badgeClassName}`}>
                       <DecisionIcon className="h-3.5 w-3.5" />
                       {request.decision}
                     </div>
                   </td>
-                  <td className="px-4 py-4 align-top text-sm text-[#8a8a96]">
+                  <td className="px-4 py-4 align-top text-sm text-slate-400">
                     {request.time}
                   </td>
                   <td className="px-4 py-4 align-top text-center">
-                    <button
+                    <motion.button
                       onClick={() => setSelectedRequest(request)}
-                      className="inline-flex rounded-lg bg-[#12121a] border border-[rgba(255,255,255,0.06)] p-2.5 text-[#8a8a96] transition-all duration-200 hover:bg-[#1a1a24] hover:text-[#f0f0f5] hover:border-[rgba(255,255,255,0.12)]"
+                      className="inline-flex rounded-xl glass p-2.5 text-slate-500 transition-all duration-200 hover:text-white"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
                     >
                       <Eye className="h-4 w-4" />
-                    </button>
+                    </motion.button>
                   </td>
                 </tr>
               );
@@ -216,49 +220,56 @@ export default function RequestsTable({ requests }: RequestsTableProps) {
       </div>
 
       {filteredAndSorted.length === 0 ? (
-        <div className="mt-6 rounded-xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] px-4 py-10 text-center text-sm text-[#8a8a96]">
+        <div className="mt-6 rounded-xl glass px-4 py-10 text-center text-sm text-slate-500">
           No requests matched the current filters.
         </div>
       ) : null}
 
       {selectedRequest ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-          <div className="card-elevated w-full max-w-2xl p-8 relative">
+          <motion.div 
+            className="glass-strong w-full max-w-2xl p-8 relative"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+          >
             <div className="mb-8 flex items-start justify-between gap-4">
               <div>
-                <p className="eyebrow-v2 mb-2">Request Detail</p>
+                <p className="eyebrow-glass mb-2">Request Detail</p>
                 <h3 className="text-2xl font-semibold text-white">
                   {selectedRequest.user}
                 </h3>
               </div>
-              <button
+              <motion.button
                 onClick={() => setSelectedRequest(null)}
-                className="btn-secondary-v2 !rounded-full !p-2.5"
+                className="btn-glass-secondary !rounded-full !p-2.5"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
               >
                 <X className="h-4 w-4" />
-              </button>
+              </motion.button>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="card p-5">
-                <p className="text-caption mb-3">Identity</p>
+              <div className="glass p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 mb-3">Identity</p>
                 <p className="text-lg font-semibold text-white">{selectedRequest.user}</p>
-                <p className="mt-2 text-sm font-mono text-[#8a8a96]">{selectedRequest.ip}</p>
+                <p className="mt-2 text-sm font-mono text-slate-500">{selectedRequest.ip}</p>
               </div>
-              <div className="card p-5">
-                <p className="text-caption mb-3">Request shape</p>
+              <div className="glass p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 mb-3">Request shape</p>
                 <p className="text-lg font-semibold text-white">{selectedRequest.resource}</p>
-                <p className="mt-2 text-sm text-[#8a8a96]">{selectedRequest.action}</p>
+                <p className="mt-2 text-sm text-slate-400">{selectedRequest.action}</p>
               </div>
-              <div className="card p-5">
-                <p className="text-caption mb-3">Risk snapshot</p>
-                <div className={`badge-v2 ${getRiskMeta(selectedRequest.riskScore).toneClassName}`}>
+              <div className="glass p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 mb-3">Risk snapshot</p>
+                <div className={`badge-glass ${getRiskMeta(selectedRequest.riskScore).toneClassName}`}>
                   {selectedRequest.riskScore} / {getRiskMeta(selectedRequest.riskScore).label}
                 </div>
               </div>
-              <div className="card p-5">
-                <p className="text-caption mb-3">Decision</p>
-                <div className={`badge-v2 ${getDecisionMeta(selectedRequest.decision).badgeClassName}`}>
+              <div className="glass p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 mb-3">Decision</p>
+                <div className={`badge-glass ${getDecisionMeta(selectedRequest.decision).badgeClassName}`}>
                   {selectedRequest.decision === 'DENY' ? (
                     <ShieldX className="h-3.5 w-3.5" />
                   ) : (
@@ -269,20 +280,20 @@ export default function RequestsTable({ requests }: RequestsTableProps) {
               </div>
             </div>
 
-            <div className="mt-4 card p-5">
-              <p className="text-caption mb-4">Primary factors</p>
+            <div className="mt-4 glass p-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 mb-4">Primary factors</p>
               <div className="flex flex-wrap gap-2">
                 {getRiskFactors(selectedRequest).map((factor) => (
                   <span
                     key={factor}
-                    className="rounded-full border border-[rgba(255,255,255,0.06)] bg-[#12121a] px-3 py-2 text-xs font-medium text-[#8a8a96]"
+                    className="rounded-full glass px-3 py-2 text-xs font-medium text-slate-400"
                   >
                     {factor}
                   </span>
                 ))}
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       ) : null}
     </section>

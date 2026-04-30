@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { AlertTriangle, Check, KeyRound, ShieldCheck, Users, X } from 'lucide-react';
 import PageHeader from '../components/PageHeader';
 import { api } from '../lib/api';
@@ -125,59 +126,70 @@ export default function UserManagement({ onPasswordChanged }: UserManagementProp
   }
 
   return (
-    <div className="space-y-8 py-4">
+    <div className="space-y-8">
       <PageHeader
         eyebrow="Administration"
         title="User Management"
         description="Review and approve pending user registrations."
       >
         <div className="flex gap-4">
-          <div className="card px-5 py-3">
+          <motion.div 
+            className="glass px-5 py-3"
+            whileHover={{ scale: 1.02 }}
+          >
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-lg bg-sky-500/10">
-                <Users className="h-4 w-4 text-sky-400" />
+              <div className="p-2 rounded-lg bg-blue-500/10">
+                <Users className="h-4 w-4 text-blue-400" />
               </div>
               <div>
-                <p className="text-xs text-[#5a5a66]">Total users</p>
-                <p className="text-lg font-semibold text-white">{users.length}</p>
+                <p className="text-xs text-slate-500">Total users</p>
+                <p className="text-lg font-bold text-white">{users.length}</p>
               </div>
             </div>
-          </div>
-          <div className="card px-5 py-3">
+          </motion.div>
+          <motion.div 
+            className="glass px-5 py-3"
+            whileHover={{ scale: 1.02 }}
+          >
             <div className="flex items-center gap-2.5">
               <div className="p-2 rounded-lg bg-amber-500/10">
                 <AlertTriangle className="h-4 w-4 text-amber-400" />
               </div>
               <div>
-                <p className="text-xs text-[#5a5a66]">Pending</p>
-                <p className="text-lg font-semibold text-white">{pendingUsers.length}</p>
+                <p className="text-xs text-slate-500">Pending</p>
+                <p className="text-lg font-bold text-white">{pendingUsers.length}</p>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </PageHeader>
 
       {error && (
-        <div className="card border-rose-500/20 bg-rose-500/5 p-4 text-sm text-rose-300">
+        <div className="glass border-red-500/20 bg-red-500/5 p-4 text-sm text-red-300">
           {error}
         </div>
       )}
 
       {passwordMessage && (
-        <div className="card border-emerald-500/20 bg-emerald-500/5 p-4 text-sm text-emerald-300">
+        <div className="glass border-emerald-500/20 bg-emerald-500/5 p-4 text-sm text-emerald-300">
           {passwordMessage}
         </div>
       )}
 
-      <section className="card-elevated p-6">
+      <motion.section 
+        className="glass-strong p-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <div className="mb-6 flex items-center gap-3">
-          <div className="rounded-xl bg-sky-500/10 p-2.5 text-sky-400">
+          <div className="rounded-xl bg-blue-500/10 p-2.5 text-blue-400">
             <KeyRound className="h-5 w-5" />
           </div>
           <div>
-            <p className="eyebrow-v2 mb-1">Account Security</p>
-            <h2 className="heading-section text-2xl">Change your password</h2>
-            <p className="mt-1 text-sm text-[#8a8a96]">
+            <p className="eyebrow-glass mb-1">Account Security</p>
+            <h2 className="heading-section-glass">Change your password</h2>
+            <p className="mt-1 text-sm text-slate-400">
               Update your own admin password. You will be signed out after the change.
             </p>
           </div>
@@ -185,136 +197,162 @@ export default function UserManagement({ onPasswordChanged }: UserManagementProp
 
         <form onSubmit={handleChangePassword} className="grid gap-4 lg:grid-cols-3">
           <label className="space-y-2">
-            <span className="text-sm text-[#8a8a96]">Current password</span>
+            <span className="text-sm text-slate-400">Current password</span>
             <input
               type="password"
               value={currentPassword}
               onChange={(event) => setCurrentPassword(event.target.value)}
-              className="input-clean w-full"
+              className="input-glass w-full"
               required
             />
           </label>
 
           <label className="space-y-2">
-            <span className="text-sm text-[#8a8a96]">New password</span>
+            <span className="text-sm text-slate-400">New password</span>
             <input
               type="password"
               value={newPassword}
               onChange={(event) => setNewPassword(event.target.value)}
-              className="input-clean w-full"
+              className="input-glass w-full"
               minLength={12}
               required
             />
           </label>
 
           <label className="space-y-2">
-            <span className="text-sm text-[#8a8a96]">Confirm new password</span>
+            <span className="text-sm text-slate-400">Confirm new password</span>
             <input
               type="password"
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
-              className="input-clean w-full"
+              className="input-glass w-full"
               minLength={12}
               required
             />
           </label>
 
           <div className="lg:col-span-3">
-            <button
+            <motion.button
               type="submit"
               disabled={actionLoading === 'change-password'}
-              className="btn-primary-v2 w-full sm:w-auto"
+              className="btn-glass w-full sm:w-auto disabled:opacity-50"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
               <KeyRound className="h-4 w-4" />
               {actionLoading === 'change-password' ? 'Updating password...' : 'Update password'}
-            </button>
+            </motion.button>
           </div>
         </form>
-      </section>
+      </motion.section>
 
       {/* Pending Users Section */}
       {pendingUsers.length > 0 && (
-        <section className="card-elevated p-6">
+        <motion.section 
+          className="glass-strong p-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
           <div className="mb-6">
-            <p className="eyebrow-v2 mb-2">Pending Approval</p>
-            <h2 className="heading-section text-2xl">New Registrations</h2>
+            <p className="eyebrow-glass mb-2">Pending Approval</p>
+            <h2 className="heading-section-glass">New Registrations</h2>
           </div>
           
           <div className="space-y-2">
             {pendingUsers.map((user) => (
-              <div key={user.id} className="card p-4">
+              <motion.div 
+                key={user.id} 
+                className="glass p-4"
+                whileHover={{ scale: 1.01 }}
+              >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400 font-semibold text-sm">
+                    <div className="h-10 w-10 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400 font-semibold text-sm"
+                    >
                       {user.username.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-[#f0f0f5]">{user.username}</p>
-                      <p className="text-xs text-[#5a5a66] mt-0.5">
+                      <p className="text-sm font-medium text-white">{user.username}</p>
+                      <p className="text-xs text-slate-600 mt-0.5">
                         {new Date(user.created_at).toLocaleString()}
                       </p>
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <button
+                    <motion.button
                       onClick={() => handleApprove(user.id)}
                       disabled={actionLoading === user.id}
-                      className="btn-primary-v2 !py-2 !px-4 text-sm"
+                      className="btn-glass !py-2 !px-4 text-sm disabled:opacity-50"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
                       <Check className="h-4 w-4" />
                       Approve
-                    </button>
-                    <button
+                    </motion.button>
+                    <motion.button
                       onClick={() => handleReject(user.id)}
                       disabled={actionLoading === user.id}
-                      className="btn-secondary-v2 !py-2 !px-4 text-sm"
+                      className="btn-glass-secondary !py-2 !px-4 text-sm disabled:opacity-50"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
                       <X className="h-4 w-4" />
                       Reject
-                    </button>
+                    </motion.button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </section>
+        </motion.section>
       )}
 
       {/* Active Users Section */}
-      <section className="card-elevated p-6">
+      <motion.section 
+        className="glass-strong p-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
         <div className="mb-6">
-          <p className="eyebrow-v2 mb-2">Active Users</p>
-          <h2 className="heading-section text-2xl">Approved Members</h2>
+          <p className="eyebrow-glass mb-2">Active Users</p>
+          <h2 className="heading-section-glass">Approved Members</h2>
         </div>
         
         {activeUsers.length === 0 ? (
-          <p className="text-[#5a5a66] text-center py-8">No active users yet.</p>
+          <p className="text-slate-600 text-center py-8">No active users yet.</p>
         ) : (
           <div className="space-y-2">
             {activeUsers.map((user) => (
-              <div key={user.id} className="card p-4">
+              <motion.div 
+                key={user.id} 
+                className="glass p-4"
+                whileHover={{ scale: 1.01 }}
+              >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 font-semibold text-sm">
+                    <div className="h-10 w-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 font-semibold text-sm"
+                    >
                       {user.username.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-[#f0f0f5]">{user.username}</p>
-                      <p className="text-xs text-[#5a5a66] mt-0.5">
+                      <p className="text-sm font-medium text-white">{user.username}</p>
+                      <p className="text-xs text-slate-600 mt-0.5">
                         Role: {user.role} • {new Date(user.created_at).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
-                  <div className="badge-v2 badge-allow">
+                  <div className="badge-glass border-emerald-500/20 bg-emerald-500/5 text-emerald-400">
                     <ShieldCheck className="h-3 w-3" />
                     {user.status}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         )}
-      </section>
+      </motion.section>
     </div>
   );
 }

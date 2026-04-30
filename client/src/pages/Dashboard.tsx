@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import {
   Activity,
   AlertTriangle,
@@ -6,8 +7,8 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import MetricCard from '../components/MetricCard';
-import PageHeader from '../components/PageHeader';
 import RequestsTable from '../components/RequestsTable';
+import DashboardScene from '../scenes/DashboardScene';
 import { api } from '../lib/api';
 import { DashboardMetrics, AccessRequest, Decision } from '../types';
 
@@ -71,29 +72,14 @@ export default function Dashboard() {
   if (isLoading) {
     return (
       <div className="space-y-10 py-4">
-        {/* Skeleton header */}
         <div className="animate-pulse space-y-4">
           <div className="h-4 w-32 bg-white/5 rounded-lg" />
           <div className="h-14 w-[28rem] bg-white/5 rounded-2xl" />
-          <div className="h-6 w-80 bg-white/5 rounded-xl" />
         </div>
-
-        {/* Skeleton metric cards */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="h-36 bg-white/[0.03] rounded-2xl animate-pulse" />
           ))}
-        </div>
-
-        {/* Skeleton table */}
-        <div className="space-y-4">
-          <div className="h-4 w-40 bg-white/5 rounded-lg" />
-          <div className="h-10 w-64 bg-white/5 rounded-xl" />
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-16 bg-white/[0.03] rounded-xl animate-pulse" />
-            ))}
-          </div>
         </div>
       </div>
     );
@@ -102,37 +88,52 @@ export default function Dashboard() {
   if (error || !metrics) {
     return (
       <div className="flex h-[60vh] items-center justify-center">
-        <div className="card p-12 text-center max-w-md">
-          <AlertTriangle className="h-10 w-10 text-[#ff6b5e] mx-auto mb-4" />
+        <div className="glass-strong p-12 text-center max-w-md">
+          <AlertTriangle className="h-10 w-10 text-red-400 mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-white mb-2">Sync Error</h2>
-          <p className="text-[#8a8a96] mb-8">{error || 'Metrics unavailable'}</p>
-          <button 
+          <p className="text-slate-400 mb-8">{error || 'Metrics unavailable'}</p>
+          <motion.button 
             onClick={() => globalThis.location.reload()}
-            className="btn-primary-v2 px-8"
+            className="btn-glass px-8"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             Retry Connection
-          </button>
+          </motion.button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-10 py-4">
-      <PageHeader
-        eyebrow="System Overview"
-        title="Environment Posture"
-        description="Real-time access intelligence and threat surface monitoring."
-      >
-        <div className="badge-v2 badge-allow px-4 py-2">
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-          </span>
-          <span className="text-sm font-semibold">Live Stream Active</span>
-        </div>
-      </PageHeader>
+    <div className="space-y-10">
+      {/* Hero with 3D */}
+      <div className="relative h-[400px] rounded-2xl overflow-hidden">
+        <DashboardScene />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0e1a] via-transparent to-[#0a0e1a] z-[1]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0e1a] via-transparent to-transparent z-[1]" />
+        
+        <motion.div 
+          className="absolute bottom-8 left-8 z-[2]"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
+          <p className="eyebrow-glass mb-2">System Overview</p>
+          <h1 className="heading-glass mb-2">Environment Posture</h1>
+          <p className="text-slate-400 max-w-md">Real-time access intelligence and threat surface monitoring.</p>
+          
+          <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full glass badge-glass">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+            <span className="text-sm font-medium text-emerald-400">Live Stream Active</span>
+          </div>
+        </motion.div>
+      </div>
 
+      {/* Metrics */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           title="Risk Level"
@@ -164,6 +165,7 @@ export default function Dashboard() {
         />
       </div>
 
+      {/* Requests Table */}
       <div className="pt-4">
         <RequestsTable requests={requests} />
       </div>

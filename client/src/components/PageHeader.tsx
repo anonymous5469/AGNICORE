@@ -14,11 +14,11 @@ export default function PageHeader({
   children,
 }: PageHeaderProps) {
   return (
-    <div className="mb-12">
-      <p className="eyebrow-v2 mb-3">{eyebrow}</p>
-      <h1 className="heading-hero mb-4">{title}</h1>
-      <p className="text-body text-lg max-w-2xl">{description}</p>
-      {children ? <div className="mt-6">{children}</div> : null}
+    <div className="mb-8">
+      <p className="eyebrow-glass mb-2">{eyebrow}</p>
+      <h1 className="heading-section-glass mb-2">{title}</h1>
+      <p className="text-slate-400 max-w-2xl">{description}</p>
+      {children ? <div className="mt-4">{children}</div> : null}
     </div>
   );
 }

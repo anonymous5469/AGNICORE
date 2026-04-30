@@ -1,4 +1,6 @@
 import { LayoutDashboard, TestTube, FileText, Users } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useGlobalStore } from '../store/globalStore';
 
 interface SidebarProps {
   readonly currentPage: string;
@@ -8,83 +10,110 @@ interface SidebarProps {
 }
 
 const menuItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, sub: 'Posture Overview' },
-  { id: 'simulation', label: 'Simulation', icon: TestTube, sub: 'Trust Testing' },
-  { id: 'logs', label: 'Audit Trail', icon: FileText, sub: 'Forensic Review' },
+  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { id: 'simulation', label: 'Simulation', icon: TestTube },
+  { id: 'logs', label: 'Audit Trail', icon: FileText },
 ];
 
 const adminItems = [
-  { id: 'users', label: 'User Management', icon: Users, sub: 'Admin Panel' },
+  { id: 'users', label: 'User Management', icon: Users },
 ];
 
 export default function Sidebar({ currentPage, onNavigate, onClose, isAdmin }: SidebarProps) {
+  const sidebarExpanded = useGlobalStore((state) => state.sidebarExpanded);
   const allItems = isAdmin ? [...menuItems, ...adminItems] : menuItems;
 
   return (
-    <aside className="flex h-full w-full max-w-[260px] flex-col rounded-2xl bg-[#0f0f16] border border-[rgba(255,255,255,0.06)] p-5">
-      <div className="mb-8 px-1">
-        <p className="text-[0.6rem] font-bold uppercase tracking-[0.3em] text-[#5a5a66] mb-1">Terminal</p>
-        <h2 className="text-2xl font-bold tracking-tight text-white">
-          AGNICORE
-        </h2>
-        <div className="mt-3 h-[2px] w-12 bg-[#d4a853] rounded-full" />
-      </div>
+    <motion.aside
+      className="fixed left-0 top-16 bottom-0 z-30 glass-strong border-t-0 border-b-0 border-l-0 rounded-none"
+      initial={false}
+      animate={{ width: sidebarExpanded ? 280 : 80 }}
+      transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+    >
+      <div className="flex flex-col h-full py-4">
+        <nav className="flex-1 space-y-1 px-3">
+          {allItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = currentPage === item.id;
 
-      <nav className="space-y-1">
-        {allItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = currentPage === item.id;
-
-          return (
-            <button
-              key={item.id}
-              onClick={() => {
-                onNavigate(item.id);
-                onClose?.();
-              }}
-              className={`group flex w-full items-center gap-3.5 rounded-xl px-4 py-3.5 text-left transition-all duration-200 relative ${
-                isActive
-                  ? 'bg-[rgba(212,168,83,0.08)] text-white'
-                  : 'text-[#8a8a96] hover:bg-[rgba(255,255,255,0.03)] hover:text-[#f0f0f5]'
-              }`}
-            >
-              {/* Active indicator line */}
-              {isActive && (
-                <div className="absolute left-0 top-2.5 bottom-2.5 w-[3px] bg-[#d4a853] rounded-full" />
-              )}
-              
-              <div
-                className={`rounded-lg p-2 transition-colors ${
-                  isActive 
-                    ? 'bg-[rgba(212,168,83,0.15)] text-[#d4a853]' 
-                    : 'bg-[rgba(255,255,255,0.03)] text-[#5a5a66] group-hover:text-[#8a8a96]'
+            return (
+              <motion.button
+                key={item.id}
+                onClick={() => {
+                  onNavigate(item.id);
+                  onClose?.();
+                }}
+                className={`relative flex items-center w-full rounded-xl transition-all duration-200 group ${
+                  isActive
+                    ? 'bg-blue-500/10 text-white'
+                    : 'text-slate-400 hover:bg-white/5 hover:text-white'
                 }`}
+                style={{ 
+                  padding: sidebarExpanded ? '12px 16px' : '12px',
+                  justifyContent: sidebarExpanded ? 'flex-start' : 'center'
+                }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                <Icon className="h-4.5 w-4.5" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold">{item.label}</p>
-                <p className="text-[0.65rem] font-medium uppercase tracking-wider text-[#5a5a66] mt-0.5">{item.sub}</p>
-              </div>
-            </button>
-          );
-        })}
-      </nav>
+                {/* Active indicator */}
+                {isActive && (
+                  <motion.div
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 bg-blue-500 rounded-full glow-blue"
+                    layoutId="activeIndicator"
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  />
+                )}
+                
+                <div className={`p-2 rounded-lg transition-colors ${
+                  isActive 
+                    ? 'bg-blue-500/20 text-blue-400' 
+                    : 'bg-white/5 text-slate-500 group-hover:text-slate-300'
+                }`}>
+                  <Icon className="h-5 w-5" />
+                </div>
+                
+                <AnimatePresence>
+                  {sidebarExpanded && (
+                    <motion.span
+                      className="ml-3 text-sm font-medium whitespace-nowrap"
+                      initial={{ opacity: 0, width: 0 }}
+                      animate={{ opacity: 1, width: 'auto' }}
+                      exit={{ opacity: 0, width: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      {item.label}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </motion.button>
+            );
+          })}
+        </nav>
 
-      <div className="mt-auto">
-        <div className="card p-4">
-          <div className="flex items-center gap-2.5">
-            <div className="relative">
-              <div className="h-2 w-2 rounded-full bg-emerald-500" />
-              <div className="absolute inset-0 h-2 w-2 rounded-full bg-emerald-400 animate-ping opacity-60" />
+        {/* System Status */}
+        <div className="px-3 mt-auto">
+          <div className={`glass p-3 ${!sidebarExpanded && 'flex justify-center'}`}>
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                <div className="absolute inset-0 w-2 h-2 rounded-full bg-emerald-400 animate-ping opacity-60" />
+              </div>
+              <AnimatePresence>
+                {sidebarExpanded && (
+                  <motion.span
+                    className="text-[11px] font-semibold uppercase tracking-wider text-emerald-400"
+                    initial={{ opacity: 0, width: 0 }}
+                    animate={{ opacity: 1, width: 'auto' }}
+                    exit={{ opacity: 0, width: 0 }}
+                  >
+                    System Secure
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </div>
-            <p className="text-[0.7rem] font-bold uppercase tracking-wider text-emerald-400/90">System Secure</p>
           </div>
-          <p className="mt-2 text-[0.7rem] leading-relaxed text-[#5a5a66]">
-            All nodes reporting nominal trust telemetry.
-          </p>
         </div>
       </div>
-    </aside>
+    </motion.aside>
   );
 }
