@@ -1,0 +1,276 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+    
+    /* New glassmorphic palette */
+    --bg-deep: #0a0e1a;
+    --bg-gradient-start: #0f172a;
+    --bg-gradient-end: #020617;
+    
+    --primary: #3b82f6;
+    --primary-light: #60a5fa;
+    --primary-glow: rgba(59,130,246,0.4);
+    
+    --secondary: #8b5cf6;
+    --secondary-light: #a78bfa;
+    --secondary-glow: rgba(139,92,246,0.4);
+    
+    --accent: #06b6d4;
+    --accent-glow: rgba(6,182,212,0.4);
+    
+    --glass-bg: rgba(255,255,255,0.03);
+    --glass-bg-strong: rgba(255,255,255,0.05);
+    --glass-border: rgba(255,255,255,0.08);
+    --glass-border-hover: rgba(255,255,255,0.15);
+    --glass-highlight: rgba(255,255,255,0.05);
+    
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;
+    --text-muted: #475569;
+    
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+  }
+
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply min-h-screen overflow-x-hidden;
+    background: linear-gradient(90deg, var(--bg-gradient-end) 0%, var(--bg-deep) 50%, var(--bg-gradient-start) 100%);
+    color: var(--text-primary);
+    font-family: "Inter", "Space Grotesk", system-ui, sans-serif;
+  }
+
+  #root {
+    @apply min-h-screen;
+  }
+}
+
+@layer components {
+  /* Glass card utilities */
+  .glass {
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    box-shadow: 
+      0 4px 24px rgba(0,0,0,0.3),
+      inset 0 1px 0 rgba(255,255,255,0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass:hover {
+    border-color: rgba(255,255,255,0.15);
+    box-shadow: 
+      0 8px 32px rgba(0,0,0,0.4),
+      inset 0 1px 0 rgba(255,255,255,0.1);
+    transform: translateY(-2px);
+  }
+
+  .glass-strong {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(24px) saturate(150%);
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    box-shadow: 
+      0 8px 32px rgba(0,0,0,0.4),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+
+  /* Buttons */
+  .btn-glass {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 font-semibold transition-all duration-200;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 4px 20px rgba(59,130,246,0.3);
+  }
+
+  .btn-glass:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 30px rgba(59,130,246,0.5);
+  }
+
+  .btn-glass-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border px-5 py-3 text-sm font-medium transition-all duration-200;
+    border-color: rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+    color: var(--text-secondary);
+  }
+
+  .btn-glass-secondary:hover {
+    border-color: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.1);
+    color: white;
+  }
+
+  /* Inputs */
+  .input-glass {
+    @apply rounded-xl px-4 py-3 text-sm outline-none transition-all duration-200;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+  }
+
+  .input-glass::placeholder {
+    color: var(--text-muted);
+  }
+
+  .input-glass:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+  }
+
+  /* Badges */
+  .badge-glass {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  /* Typography */
+  .heading-glass {
+    @apply text-5xl font-bold tracking-tight;
+    color: white;
+    line-height: 1.1;
+  }
+
+  .heading-section-glass {
+    @apply text-3xl font-semibold tracking-tight;
+    color: white;
+  }
+
+  .eyebrow-glass {
+    @apply text-xs font-semibold uppercase tracking-[0.2em];
+    color: var(--primary-light);
+  }
+
+  /* Glow effects */
+  .glow-blue {
+    box-shadow: 0 0 20px rgba(59,130,246,0.3), 0 0 40px rgba(59,130,246,0.1);
+  }
+
+  .glow-purple {
+    box-shadow: 0 0 20px rgba(139,92,246,0.3), 0 0 40px rgba(139,92,246,0.1);
+  }
+
+  .glow-cyan {
+    box-shadow: 0 0 20px rgba(6,182,212,0.3), 0 0 40px rgba(6,182,212,0.1);
+  }
+
+  /* Gradient orbs */
+  .orb-blue {
+    background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+    filter: blur(100px);
+    opacity: 0.15;
+  }
+
+  .orb-purple {
+    background: radial-gradient(circle, var(--secondary) 0%, transparent 70%);
+    filter: blur(120px);
+    opacity: 0.12;
+  }
+
+  .orb-cyan {
+    background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+    filter: blur(80px);
+    opacity: 0.1;
+  }
+
+  /* Scrollbar */
+  .scrollbar-glass::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+  }
+
+  .scrollbar-glass::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 9999px;
+  }
+
+  .scrollbar-glass::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+}
+
+/* Auth Background Animations */
+@keyframes orb-float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
+  50% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  75% {
+    transform: translate(20px, 10px) scale(1.05);
+  }
+}
+
+@keyframes orb-float-reverse {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(-30px, 30px) scale(1.1);
+  }
+  50% {
+    transform: translate(20px, -20px) scale(0.9);
+  }
+  75% {
+    transform: translate(-20px, -10px) scale(1.05);
+  }
+}
+
+@keyframes orb-pulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 0.2;
+  }
+}
+
+.animate-orb-float {
+  animation: orb-float 20s ease-in-out infinite;
+}
+
+.animate-orb-float-reverse {
+  animation: orb-float-reverse 25s ease-in-out infinite;
+}
+
+.animate-orb-pulse {
+  animation: orb-pulse 15s ease-in-out infinite;
+}
+
+/* Radial gradient utility */
+.bg-gradient-radial {
+  background: radial-gradient(circle at center, var(--tw-gradient-stops));
+}
