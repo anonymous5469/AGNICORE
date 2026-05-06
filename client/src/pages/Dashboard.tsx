@@ -15,10 +15,15 @@ import { DashboardMetrics, AccessRequest, Decision } from '../types';
 interface LogResponse {
   id: string;
   user: string;
+  resource: string;
+  action: string;
+  ip: string;
+  device: string;
+  location: string;
   risk_score: number;
   decision: string;
+  reason: string;
   created_at: string;
-  resource: string;
 }
 
 export default function Dashboard() {
@@ -43,14 +48,14 @@ export default function Dashboard() {
           return {
             id: log.id,
             user: log.user,
-            ip: 'Dynamic',
-            device: 'Dynamic',
+            ip: log.ip || 'Unknown',
+            device: log.device || 'Unknown',
             riskScore: log.risk_score,
             decision: log.decision as Decision,
             time: new Date(log.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             resource: log.resource,
-            action: 'access',
-            location: 'Remote',
+            action: log.action || 'access',
+            location: log.location || 'Unknown',
             severity: getSeverity(log.risk_score),
             trustLabel: log.decision === 'DENY' ? 'Security Violation' : 'Verified Access',
           };

@@ -16,23 +16,28 @@ export default function Logs() {
         interface BackendLog {
           id: string;
           user: string;
+          resource: string;
+          action: string;
+          ip: string;
+          device: string;
+          location: string;
           risk_score: number;
           decision: string;
+          reason: string;
           created_at: string;
-          resource: string;
         }
         const data = await api.get<BackendLog[]>('/access/logs');
         setLogs(data.map(log => ({
           id: log.id,
           timestamp: new Date(log.created_at).toLocaleString(),
           user: log.user,
-          ip: 'Dynamic',
-          device: 'Auto-detected',
+          ip: log.ip || 'Unknown',
+          device: log.device || 'Unknown',
           riskScore: log.risk_score,
           decision: log.decision as Decision,
-          location: 'Remote',
+          location: log.location || 'Unknown',
           resource: log.resource,
-          reason: log.decision === 'DENY' ? 'Security policy enforcement' : 'Standard access verification',
+          reason: log.reason || (log.decision === 'DENY' ? 'Security policy enforcement' : 'Standard access verification'),
           severity: log.risk_score > 60 ? 'high' : log.risk_score > 30 ? 'medium' : 'low',
         })));
       } catch (error) {
