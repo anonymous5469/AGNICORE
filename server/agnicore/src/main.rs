@@ -115,6 +115,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             Err(e) => tracing::error!("Failed to create admin user: {:?}", e),
         }
     }
+
+    // Seed sample data if database is empty (for demo purposes)
+    let log_count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM logs")
+        .fetch_one(&pool)
+        .await
+        .unwrap_or(0);
+    if log_count == 0 {
+        tracing::info!("No logs found. Seeding sample data...");
+        seed_sample_data(&pool).await;
+        tracing::info!("Sample data seeded successfully");
+    }
     
     // Build app state
     let app_state = AppState::new(log_repo, user_repo);
@@ -172,6 +183,44 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     axum::serve(listener, app).await?;
 
     Ok(())
+}
+
+async fn seed_sample_data(pool: &sqlx::PgPool) {
+    use chrono::Utc;
+    use uuid::Uuid;
+    
+    let sample_logs = vec![
+        ("admin", "finance/reports", "read", "192.168.1.4", "Linux Workstation", "Trusted", 12, "ALLOW", "Normal business hours access from trusted location"),
+        ("john.doe", "engineering/ci", "write", "10.0.0.15", "Windows Laptop", "External", 45, "VERIFY", "Write action from external network, requires verification"),
+        ("attacker", "admin/root", "write", "203.45.67.89", "Unknown Device", "Unknown", 89, "DENY", "Suspicious access attempt to admin resources from unknown location"),
+        ("jane.smith", "sales/portal", "read", "192.168.1.10", "iPhone", "Trusted", 28, "ALLOW", "Standard access during work hours"),
+        ("bob.wilson", "ops/observability", "read", "172.16.0.5", "Linux Server", "Trusted", 15, "ALLOW", "Automated monitoring system access"),
+        ("threat.actor", "admin/secrets", "read", "185.220.101.45", "Kali Linux", "Unknown", 92, "DENY", "Multiple failed attempts from anonymized endpoint"),
+        ("remote.dev", "engineering/git", "write", "10.0.0.22", "MacBook Pro", "External", 38, "VERIFY", "Developer VPN access during off-hours"),
+        ("service.bot", "api/v1/health", "read", "127.0.0.1", "Docker Container", "Trusted", 5, "ALLOW", "Internal health check probe"),
+        ("guest.user", "public/docs", "read", "8.8.8.8", "Chrome Browser", "External", 20, "ALLOW", "Public documentation access"),
+        ("security.scan", "network/edge", "read", "192.168.1.100", "Security Appliance", "Trusted", 35, "VERIFY", "Security scan requires approval"),
+    ];
+
+    for (user, resource, action, ip, device, location, risk_score, decision, reason) in sample_logs {
+        let _ = sqlx::query(
+            "INSERT INTO logs (id, \"user\", resource, action, ip, device, location, risk_score, decision, reason, created_at)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)"
+        )
+        .bind(Uuid::new_v4().to_string())
+        .bind(user)
+        .bind(resource)
+        .bind(action)
+        .bind(ip)
+        .bind(device)
+        .bind(location)
+        .bind(risk_score)
+        .bind(decision)
+        .bind(reason)
+        .bind(Utc::now() - chrono::Duration::hours(rand::random::<i64>() % 48))
+        .execute(pool)
+        .await;
+    }
 }
 
 async fn root() -> &'static str {
