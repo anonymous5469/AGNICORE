@@ -9,4 +9,5 @@ pub fn create_route() -> Router<AppState> {
         .route("/validate", post(access_handler::handle_validate_token))
         .route("/logs", get(access_handler::handle_get_logs))
         .route("/metrics", get(metrics_handler::handle_get_metrics))
+        .route("/seed", get(access_handler::handle_seed_data))
 }

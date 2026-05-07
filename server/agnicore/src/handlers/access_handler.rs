@@ -155,3 +155,12 @@ pub async fn handle_validate_token(
     let is_valid = auth_service.validate_token(&req.token).await?;
     Ok(Json(json!({ "valid": is_valid })))
 }
+
+pub async fn handle_seed_data(
+    State(_state): State<AppState>,
+) -> Result<Json<serde_json::Value>, crate::errors::AppError> {
+    Ok(Json(json!({
+        "message": "To seed data, please use the /api/health endpoint or restart the server",
+        "note": "Data is automatically seeded on first startup when database is empty"
+    })))
+}
