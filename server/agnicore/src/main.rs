@@ -160,8 +160,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .await;
             
             tracing::info!("Fixed {} incomplete records", incomplete_count);
+        }
+        
+        // Ensure we have at least 10 records for a good demo
+        if log_count < 10 {
+            tracing::info!("Only {} records found. Adding more sample data...", log_count);
+            seed_sample_data(&pool).await;
+            tracing::info!("Additional sample data added");
         } else {
-            tracing::info!("All {} records are complete", log_count);
+            tracing::info!("Database has {} records", log_count);
         }
     }
     
