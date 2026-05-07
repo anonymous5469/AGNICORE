@@ -25,7 +25,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize PostgreSQL Database
     let pool = db::connection::connect_db().await?;
     
-    // Create tables if they don't exist
+    // Create tables if they don't exist (with new schema)
     sqlx::query(
         "CREATE TABLE IF NOT EXISTS logs (
             id VARCHAR(36) PRIMARY KEY,
@@ -43,6 +43,46 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     )
     .execute(&pool)
     .await?;
+
+    // Run migrations for existing tables (add new columns if they don't exist)
+    tracing::info!("Running database migrations...");
+    
+    // Add action column if missing
+    let _ = sqlx::query(
+        "ALTER TABLE logs ADD COLUMN IF NOT EXISTS action VARCHAR(50) NOT NULL DEFAULT 'read'"
+    )
+    .execute(&pool)
+    .await;
+
+    // Add ip column if missing
+    let _ = sqlx::query(
+        "ALTER TABLE logs ADD COLUMN IF NOT EXISTS ip VARCHAR(45) NOT NULL DEFAULT '127.0.0.1'"
+    )
+    .execute(&pool)
+    .await;
+
+    // Add device column if missing
+    let _ = sqlx::query(
+        "ALTER TABLE logs ADD COLUMN IF NOT EXISTS device VARCHAR(100)"
+    )
+    .execute(&pool)
+    .await;
+
+    // Add location column if missing
+    let _ = sqlx::query(
+        "ALTER TABLE logs ADD COLUMN IF NOT EXISTS location VARCHAR(50) NOT NULL DEFAULT 'Unknown'"
+    )
+    .execute(&pool)
+    .await;
+
+    // Add reason column if missing
+    let _ = sqlx::query(
+        "ALTER TABLE logs ADD COLUMN IF NOT EXISTS reason TEXT"
+    )
+    .execute(&pool)
+    .await;
+
+    tracing::info!("Database migrations completed successfully");
 
     sqlx::query(
         "CREATE TABLE IF NOT EXISTS users (
