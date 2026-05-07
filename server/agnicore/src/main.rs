@@ -116,15 +116,53 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
-    // Seed sample data if database is empty (for demo purposes)
+    // Smart data seeding/fixing
     let log_count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM logs")
         .fetch_one(&pool)
         .await
         .unwrap_or(0);
+    
     if log_count == 0 {
+        // Database is empty - insert sample data
         tracing::info!("No logs found. Seeding sample data...");
         seed_sample_data(&pool).await;
         tracing::info!("Sample data seeded successfully");
+    } else {
+        // Fix old records with null fields
+        tracing::info!("Checking for incomplete records...");
+        
+        // Count incomplete records before fixing
+        let incomplete_count: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM logs 
+             WHERE device IS NULL OR location IS NULL OR reason IS NULL OR action IS NULL"
+        )
+        .fetch_one(&pool)
+        .await
+        .unwrap_or(0);
+        
+        if incomplete_count > 0 {
+            tracing::info!("Found {} incomplete records. Fixing...", incomplete_count);
+            
+            // Update incomplete records with reasonable defaults
+            let _ = sqlx::query(
+                "UPDATE logs 
+                 SET device = COALESCE(device, 'Unknown Device'),
+                     location = COALESCE(location, 'Unknown'),
+                     reason = COALESCE(reason, CASE 
+                         WHEN decision = 'DENY' THEN 'High risk access denied'
+                         WHEN decision = 'VERIFY' THEN 'Medium risk - verification required'
+                         ELSE 'Low risk access'
+                     END),
+                     action = COALESCE(action, 'read')
+                 WHERE device IS NULL OR location IS NULL OR reason IS NULL OR action IS NULL"
+            )
+            .execute(&pool)
+            .await;
+            
+            tracing::info!("Fixed {} incomplete records", incomplete_count);
+        } else {
+            tracing::info!("All {} records are complete", log_count);
+        }
     }
     
     // Build app state
