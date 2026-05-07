@@ -1,0 +1,49 @@
+[package]
+name = "agnicore"
+version = "0.1.0"
+edition = "2021"
+authors = ["Your Name <you@example.com>"]
+description = "Core AGNI server backend"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/your-org/AGNICORE"
+readme = "README.md"
+keywords = ["rust", "backend", "api", "axum"]
+categories = ["network-programming", "web-programming"]
+default-run = "agnicore"
+
+[dependencies]
+axum = "0.8"
+tokio = { version = "1.47", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter"] }
+uuid = { version = "1.4", features = ["serde", "v4"] }
+async-trait = "0.1"
+anyhow = "1.0"
+config = "0.14"
+dotenvy = "0.15"
+chrono = { version = "0.4.44", features = ["serde"] }
+jsonwebtoken = { version = "10.3.0", features = ["rust_crypto"] }
+sqlx = { version = "0.8.6", default-features = false, features = ["runtime-tokio", "sqlite", "postgres", "macros", "derive", "chrono"] }
+tower-http = { version = "0.6", features = ["cors", "trace", "limit", "set-header"] }
+tower = { version = "0.5", features = ["util", "buffer"] }
+governor = "0.7"
+subtle = "2.6"
+argon2 = "0.5"
+password-hash = "0.5"
+oath = "0.1"
+base32 = "0.4"
+rand = "0.8"
+
+[dev-dependencies]
+tower = { version = "0.5", features = ["util"] }
+http-body-util = "0.1"
+
+[profile.release]
+opt-level = "z"
+strip = "symbols"
+codegen-units = 1
+lto = true
+panic = "abort"
