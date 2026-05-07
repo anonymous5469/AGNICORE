@@ -171,6 +171,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             tracing::info!("Database has {} records", log_count);
         }
     }
+
+    // Start background data generator
+    let enable_generator = env::var("ENABLE_DATA_GENERATION")
+        .unwrap_or_else(|_| "true".to_string())
+        == "true";
+    
+    if enable_generator {
+        tracing::info!("Starting background data generator...");
+        let generator_pool = pool.clone();
+        tokio::spawn(async move {
+            let generator = agnicore::services::data_generator::DataGenerator::new(generator_pool);
+            generator.start_background().await;
+        });
+    } else {
+        tracing::info!("Background data generator disabled");
+    }
     
     // Build app state
     let app_state = AppState::new(log_repo, user_repo);
