@@ -4,6 +4,7 @@ use serde::Serialize;
 use crate::state::AppState;
 
 #[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct DashboardMetrics {
     pub risk_score: i32,
     pub requests_today: i64,
